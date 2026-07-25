@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <!--
+          The assembly is named RestaurantReservation.Console to stay consistent with .Db (and a future
+          .Tests), but the root namespace deliberately stays RestaurantReservation: inside a namespace
+          ending in ".Console", every unqualified Console.WriteLine would bind to the namespace instead
+          of System.Console and fail to compile (CS0118).
+        -->
+        <RootNamespace>RestaurantReservation</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\RestaurantReservation.Db\RestaurantReservation.Db.csproj" />
+    </ItemGroup>
+
+    <!-- Global usings so per-file framework using directives are unnecessary. -->
+    <ItemGroup>
+        <Using Include="Microsoft.EntityFrameworkCore" />
+        <Using Include="Microsoft.Extensions.Configuration" />
+        <Using Include="RestaurantReservation.Db" />
+        <Using Include="RestaurantReservation.Db.Abstractions" />
+        <Using Include="RestaurantReservation.Db.Entities" />
+        <Using Include="RestaurantReservation.Db.Repositories" />
+        <Using Include="RestaurantReservation.Output" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="appsettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+</Project>
