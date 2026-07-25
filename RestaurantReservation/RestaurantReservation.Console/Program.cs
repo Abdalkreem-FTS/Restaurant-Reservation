@@ -1,8 +1,5 @@
-using System.Globalization;
 using Microsoft.Extensions.Logging;
 using RestaurantReservation;
-
-CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
 
 var options = DemoOptions.Parse(args);
 
