@@ -6,6 +6,13 @@ and exposes them through a repository layer — including database **views**, a 
 **stored procedure**, all created via EF Core migrations. The schema follows the ER diagram in
 [`diagrams/ER_Diagram.png`](diagrams/ER_Diagram.png).
 
+## Projects
+
+| Project | Contents |
+| --- | --- |
+| `RestaurantReservation.Db` | DbContext, entities, configurations, migrations + seed data, the view/function/procedure SQL, and one repository per entity |
+| `RestaurantReservation.Tests` | Model tests and container-backed integration tests for the Db project |
+
 ## Tech stack
 
 - .NET 10 / C#
@@ -50,3 +57,29 @@ and exposes them through a repository layer — including database **views**, a 
 
 The connection string is in `RestaurantReservation/RestaurantReservation.Db/appsettings.json` and matches
 the SA password in `docker-compose.yml`.
+
+## Tests
+
+`RestaurantReservation.Tests` targets the `RestaurantReservation.Db` project on two levels:
+
+| Folder | Covers | Needs Docker |
+| --- | --- | --- |
+| `Model/` | What the configurations declare — keys, columns, precision, relationships and delete behaviour, view mappings, the foreign-key integrity of the `HasData` seed, and the DI registrations | no |
+| `Integration/` | What SQL Server actually does — repository CRUD and every query method, both views, the scalar function, the stored procedure, restrict/cascade behaviour, and the objects the migration creates | yes |
+
+```bash
+dotnet test                                  # everything
+dotnet test --filter Category=Model          # fast, no Docker
+dotnet test --filter Category=Integration    # container-backed
+```
+
+The integration tests start **one** SQL Server 2025 container via
+[Testcontainers](https://dotnet.testcontainers.org/), run `Database.MigrateAsync()` against it — so
+the migration itself is under test, schema, seed, views, function and procedure included — and dispose
+the container when the run ends. The Docker daemon has to be running; nothing else is required, and
+the `docker compose` instance used for development is neither needed nor touched.
+
+Each test gets its own `DbContext` inside a transaction that is rolled back on completion, so tests can
+insert, update and delete freely while leaving the seeded database untouched for the next one. When a
+test needs data of its own, `DatabaseTest.AddReservationAsync()` inserts a whole restaurant → table /
+employee / menu item → reservation → order → order item chain in a single call.
