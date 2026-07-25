@@ -1,11 +1,18 @@
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using Testcontainers.MsSql;
 
 namespace RestaurantReservation.Tests.Integration;
 
 public sealed class SqlServerFixture : IAsyncLifetime
 {
-    private readonly MsSqlContainer _container = new MsSqlBuilder("mcr.microsoft.com/mssql/server:2025-latest").Build();
+    private static readonly string Image = new ConfigurationBuilder()
+        .SetBasePath(AppContext.BaseDirectory)
+        .AddJsonFile("appsettings.json")
+        .Build()["SqlServer:Image"]
+        ?? throw new InvalidOperationException("\"SqlServer:Image\" is missing from appsettings.json.");
+
+    private readonly MsSqlContainer _container = new MsSqlBuilder(Image).Build();
 
     private string _connectionString = string.Empty;
 
