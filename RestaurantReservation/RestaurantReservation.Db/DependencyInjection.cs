@@ -9,6 +9,8 @@ public static class DependencyInjection
     {
         services.AddDbContext<RestaurantReservationDbContext>(options => options.UseSqlServer(connectionString));
 
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IRestaurantRepository, RestaurantRepository>();
         services.AddScoped<ITableRepository, TableRepository>();
