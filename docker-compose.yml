@@ -1,6 +1,6 @@
 services:
   sqlserver:
-    image: mcr.microsoft.com/mssql/server:2025-latest
+    image: mcr.microsoft.com/mssql/server:2025-CU7-ubuntu-24.04
     container_name: rr-sqlserver
     environment:
       ACCEPT_EULA: "Y"
