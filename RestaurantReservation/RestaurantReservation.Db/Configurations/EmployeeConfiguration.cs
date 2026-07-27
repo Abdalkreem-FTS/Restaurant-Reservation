@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RestaurantReservation.Db.Entities;
 
 namespace RestaurantReservation.Db.Configurations;
@@ -9,6 +7,8 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
     public void Configure(EntityTypeBuilder<Employee> builder)
     {
         builder.HasKey(e => e.EmployeeId);
+        
+        builder.HasAlternateKey(e => new { e.EmployeeId, e.RestaurantId });
 
         builder.Property(e => e.FirstName)
             .IsRequired()

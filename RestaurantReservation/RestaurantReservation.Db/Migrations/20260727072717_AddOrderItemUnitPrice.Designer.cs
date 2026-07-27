@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RestaurantReservation.Db;
 
@@ -11,9 +12,11 @@ using RestaurantReservation.Db;
 namespace RestaurantReservation.Db.Migrations
 {
     [DbContext(typeof(RestaurantReservationDbContext))]
-    partial class RestaurantReservationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260727072717_AddOrderItemUnitPrice")]
+    partial class AddOrderItemUnitPrice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -50,12 +53,6 @@ namespace RestaurantReservation.Db.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
                     b.HasKey("CustomerId");
 
                     b.HasIndex("Email")
@@ -70,8 +67,7 @@ namespace RestaurantReservation.Db.Migrations
                             Email = "john.doe@example.com",
                             FirstName = "John",
                             LastName = "Doe",
-                            PhoneNumber = "555-1001",
-                            RowVersion = new byte[0]
+                            PhoneNumber = "555-1001"
                         },
                         new
                         {
@@ -79,8 +75,7 @@ namespace RestaurantReservation.Db.Migrations
                             Email = "jane.smith@example.com",
                             FirstName = "Jane",
                             LastName = "Smith",
-                            PhoneNumber = "555-1002",
-                            RowVersion = new byte[0]
+                            PhoneNumber = "555-1002"
                         },
                         new
                         {
@@ -88,8 +83,7 @@ namespace RestaurantReservation.Db.Migrations
                             Email = "michael.johnson@example.com",
                             FirstName = "Michael",
                             LastName = "Johnson",
-                            PhoneNumber = "555-1003",
-                            RowVersion = new byte[0]
+                            PhoneNumber = "555-1003"
                         },
                         new
                         {
@@ -97,8 +91,7 @@ namespace RestaurantReservation.Db.Migrations
                             Email = "emily.davis@example.com",
                             FirstName = "Emily",
                             LastName = "Davis",
-                            PhoneNumber = "555-1004",
-                            RowVersion = new byte[0]
+                            PhoneNumber = "555-1004"
                         },
                         new
                         {
@@ -106,8 +99,7 @@ namespace RestaurantReservation.Db.Migrations
                             Email = "david.wilson@example.com",
                             FirstName = "David",
                             LastName = "Wilson",
-                            PhoneNumber = "555-1005",
-                            RowVersion = new byte[0]
+                            PhoneNumber = "555-1005"
                         });
                 });
 
@@ -137,12 +129,6 @@ namespace RestaurantReservation.Db.Migrations
                     b.Property<int>("RestaurantId")
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
                     b.HasKey("EmployeeId");
 
                     b.HasIndex("RestaurantId");
@@ -156,8 +142,7 @@ namespace RestaurantReservation.Db.Migrations
                             FirstName = "Alice",
                             LastName = "Turner",
                             Position = "Manager",
-                            RestaurantId = 1,
-                            RowVersion = new byte[0]
+                            RestaurantId = 1
                         },
                         new
                         {
@@ -165,8 +150,7 @@ namespace RestaurantReservation.Db.Migrations
                             FirstName = "Bob",
                             LastName = "Cook",
                             Position = "VipOrdersWaiter",
-                            RestaurantId = 1,
-                            RowVersion = new byte[0]
+                            RestaurantId = 1
                         },
                         new
                         {
@@ -174,8 +158,7 @@ namespace RestaurantReservation.Db.Migrations
                             FirstName = "Carol",
                             LastName = "White",
                             Position = "Manager",
-                            RestaurantId = 2,
-                            RowVersion = new byte[0]
+                            RestaurantId = 2
                         },
                         new
                         {
@@ -183,8 +166,7 @@ namespace RestaurantReservation.Db.Migrations
                             FirstName = "Dan",
                             LastName = "Brown",
                             Position = "StandardWaiter",
-                            RestaurantId = 2,
-                            RowVersion = new byte[0]
+                            RestaurantId = 2
                         },
                         new
                         {
@@ -192,8 +174,7 @@ namespace RestaurantReservation.Db.Migrations
                             FirstName = "Eve",
                             LastName = "Black",
                             Position = "Manager",
-                            RestaurantId = 3,
-                            RowVersion = new byte[0]
+                            RestaurantId = 3
                         },
                         new
                         {
@@ -201,8 +182,7 @@ namespace RestaurantReservation.Db.Migrations
                             FirstName = "Frank",
                             LastName = "Green",
                             Position = "AssistantWaiter",
-                            RestaurantId = 4,
-                            RowVersion = new byte[0]
+                            RestaurantId = 4
                         });
                 });
 
@@ -230,20 +210,11 @@ namespace RestaurantReservation.Db.Migrations
                     b.Property<int>("RestaurantId")
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
                     b.HasKey("ItemId");
 
                     b.HasIndex("RestaurantId");
 
-                    b.ToTable("MenuItems", t =>
-                        {
-                            t.HasCheckConstraint("CK_MenuItems_PriceIsNotNegative", "[Price] >= 0");
-                        });
+                    b.ToTable("MenuItems");
 
                     b.HasData(
                         new
@@ -252,8 +223,7 @@ namespace RestaurantReservation.Db.Migrations
                             Description = "Atlantic salmon with lemon butter",
                             Name = "Grilled Salmon",
                             Price = 24.99m,
-                            RestaurantId = 1,
-                            RowVersion = new byte[0]
+                            RestaurantId = 1
                         },
                         new
                         {
@@ -261,8 +231,7 @@ namespace RestaurantReservation.Db.Migrations
                             Description = "Romaine, parmesan, croutons",
                             Name = "Caesar Salad",
                             Price = 12.50m,
-                            RestaurantId = 1,
-                            RowVersion = new byte[0]
+                            RestaurantId = 1
                         },
                         new
                         {
@@ -270,8 +239,7 @@ namespace RestaurantReservation.Db.Migrations
                             Description = "Tomato, mozzarella, basil",
                             Name = "Margherita Pizza",
                             Price = 15.00m,
-                            RestaurantId = 2,
-                            RowVersion = new byte[0]
+                            RestaurantId = 2
                         },
                         new
                         {
@@ -279,8 +247,7 @@ namespace RestaurantReservation.Db.Migrations
                             Description = "Egg, pancetta, pecorino",
                             Name = "Spaghetti Carbonara",
                             Price = 17.50m,
-                            RestaurantId = 2,
-                            RowVersion = new byte[0]
+                            RestaurantId = 2
                         },
                         new
                         {
@@ -288,8 +255,7 @@ namespace RestaurantReservation.Db.Migrations
                             Description = "Chef's selection of 12 pieces",
                             Name = "Sushi Platter",
                             Price = 29.99m,
-                            RestaurantId = 3,
-                            RowVersion = new byte[0]
+                            RestaurantId = 3
                         },
                         new
                         {
@@ -297,8 +263,7 @@ namespace RestaurantReservation.Db.Migrations
                             Description = "Slow-braised beef in red wine",
                             Name = "Beef Bourguignon",
                             Price = 26.00m,
-                            RestaurantId = 4,
-                            RowVersion = new byte[0]
+                            RestaurantId = 4
                         });
                 });
 
@@ -322,12 +287,6 @@ namespace RestaurantReservation.Db.Migrations
                     b.Property<int>("RestaurantId")
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
                     b.Property<decimal>("TotalAmount")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
@@ -348,7 +307,6 @@ namespace RestaurantReservation.Db.Migrations
                             OrderDate = new DateTime(2026, 8, 1, 19, 30, 0, 0, DateTimeKind.Unspecified),
                             ReservationId = 1,
                             RestaurantId = 1,
-                            RowVersion = new byte[0],
                             TotalAmount = 37.49m
                         },
                         new
@@ -358,7 +316,6 @@ namespace RestaurantReservation.Db.Migrations
                             OrderDate = new DateTime(2026, 8, 1, 20, 0, 0, 0, DateTimeKind.Unspecified),
                             ReservationId = 1,
                             RestaurantId = 1,
-                            RowVersion = new byte[0],
                             TotalAmount = 24.99m
                         },
                         new
@@ -368,7 +325,6 @@ namespace RestaurantReservation.Db.Migrations
                             OrderDate = new DateTime(2026, 8, 2, 20, 30, 0, 0, DateTimeKind.Unspecified),
                             ReservationId = 2,
                             RestaurantId = 1,
-                            RowVersion = new byte[0],
                             TotalAmount = 49.98m
                         },
                         new
@@ -378,7 +334,6 @@ namespace RestaurantReservation.Db.Migrations
                             OrderDate = new DateTime(2026, 8, 3, 19, 0, 0, 0, DateTimeKind.Unspecified),
                             ReservationId = 3,
                             RestaurantId = 2,
-                            RowVersion = new byte[0],
                             TotalAmount = 32.50m
                         },
                         new
@@ -388,7 +343,6 @@ namespace RestaurantReservation.Db.Migrations
                             OrderDate = new DateTime(2026, 8, 4, 20, 0, 0, 0, DateTimeKind.Unspecified),
                             ReservationId = 4,
                             RestaurantId = 3,
-                            RowVersion = new byte[0],
                             TotalAmount = 29.99m
                         },
                         new
@@ -398,7 +352,6 @@ namespace RestaurantReservation.Db.Migrations
                             OrderDate = new DateTime(2026, 8, 5, 20, 30, 0, 0, DateTimeKind.Unspecified),
                             ReservationId = 5,
                             RestaurantId = 4,
-                            RowVersion = new byte[0],
                             TotalAmount = 26.00m
                         });
                 });
@@ -423,12 +376,6 @@ namespace RestaurantReservation.Db.Migrations
                     b.Property<int>("RestaurantId")
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
                     b.Property<decimal>("UnitPrice")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
@@ -441,8 +388,6 @@ namespace RestaurantReservation.Db.Migrations
 
                     b.ToTable("OrderItems", t =>
                         {
-                            t.HasCheckConstraint("CK_OrderItems_QuantityIsPositive", "[Quantity] > 0");
-
                             t.HasCheckConstraint("CK_OrderItems_UnitPriceIsNotNegative", "[UnitPrice] >= 0");
                         });
 
@@ -454,7 +399,6 @@ namespace RestaurantReservation.Db.Migrations
                             OrderId = 1,
                             Quantity = 1,
                             RestaurantId = 1,
-                            RowVersion = new byte[0],
                             UnitPrice = 24.99m
                         },
                         new
@@ -464,7 +408,6 @@ namespace RestaurantReservation.Db.Migrations
                             OrderId = 1,
                             Quantity = 1,
                             RestaurantId = 1,
-                            RowVersion = new byte[0],
                             UnitPrice = 12.50m
                         },
                         new
@@ -474,7 +417,6 @@ namespace RestaurantReservation.Db.Migrations
                             OrderId = 2,
                             Quantity = 1,
                             RestaurantId = 1,
-                            RowVersion = new byte[0],
                             UnitPrice = 24.99m
                         },
                         new
@@ -484,7 +426,6 @@ namespace RestaurantReservation.Db.Migrations
                             OrderId = 3,
                             Quantity = 2,
                             RestaurantId = 1,
-                            RowVersion = new byte[0],
                             UnitPrice = 24.99m
                         },
                         new
@@ -494,7 +435,6 @@ namespace RestaurantReservation.Db.Migrations
                             OrderId = 4,
                             Quantity = 1,
                             RestaurantId = 2,
-                            RowVersion = new byte[0],
                             UnitPrice = 15.00m
                         },
                         new
@@ -504,7 +444,6 @@ namespace RestaurantReservation.Db.Migrations
                             OrderId = 4,
                             Quantity = 1,
                             RestaurantId = 2,
-                            RowVersion = new byte[0],
                             UnitPrice = 17.50m
                         },
                         new
@@ -514,7 +453,6 @@ namespace RestaurantReservation.Db.Migrations
                             OrderId = 5,
                             Quantity = 1,
                             RestaurantId = 3,
-                            RowVersion = new byte[0],
                             UnitPrice = 29.99m
                         },
                         new
@@ -524,7 +462,6 @@ namespace RestaurantReservation.Db.Migrations
                             OrderId = 6,
                             Quantity = 1,
                             RestaurantId = 4,
-                            RowVersion = new byte[0],
                             UnitPrice = 26.00m
                         });
                 });
@@ -548,12 +485,6 @@ namespace RestaurantReservation.Db.Migrations
 
                     b.Property<int>("RestaurantId")
                         .HasColumnType("int");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
 
                     b.Property<int>("TableCapacity")
                         .HasColumnType("int");
@@ -589,7 +520,6 @@ namespace RestaurantReservation.Db.Migrations
                             PartySize = 2,
                             ReservationDate = new DateTime(2026, 8, 1, 19, 0, 0, 0, DateTimeKind.Unspecified),
                             RestaurantId = 1,
-                            RowVersion = new byte[0],
                             TableCapacity = 2,
                             TableId = 1
                         },
@@ -600,7 +530,6 @@ namespace RestaurantReservation.Db.Migrations
                             PartySize = 4,
                             ReservationDate = new DateTime(2026, 8, 2, 20, 0, 0, 0, DateTimeKind.Unspecified),
                             RestaurantId = 1,
-                            RowVersion = new byte[0],
                             TableCapacity = 4,
                             TableId = 2
                         },
@@ -611,7 +540,6 @@ namespace RestaurantReservation.Db.Migrations
                             PartySize = 3,
                             ReservationDate = new DateTime(2026, 8, 3, 18, 0, 0, 0, DateTimeKind.Unspecified),
                             RestaurantId = 2,
-                            RowVersion = new byte[0],
                             TableCapacity = 4,
                             TableId = 3
                         },
@@ -622,7 +550,6 @@ namespace RestaurantReservation.Db.Migrations
                             PartySize = 6,
                             ReservationDate = new DateTime(2026, 8, 4, 19, 0, 0, 0, DateTimeKind.Unspecified),
                             RestaurantId = 3,
-                            RowVersion = new byte[0],
                             TableCapacity = 6,
                             TableId = 4
                         },
@@ -633,7 +560,6 @@ namespace RestaurantReservation.Db.Migrations
                             PartySize = 2,
                             ReservationDate = new DateTime(2026, 8, 5, 20, 0, 0, 0, DateTimeKind.Unspecified),
                             RestaurantId = 4,
-                            RowVersion = new byte[0],
                             TableCapacity = 2,
                             TableId = 5
                         },
@@ -644,7 +570,6 @@ namespace RestaurantReservation.Db.Migrations
                             PartySize = 8,
                             ReservationDate = new DateTime(2026, 8, 6, 21, 0, 0, 0, DateTimeKind.Unspecified),
                             RestaurantId = 5,
-                            RowVersion = new byte[0],
                             TableCapacity = 8,
                             TableId = 6
                         });
@@ -678,12 +603,6 @@ namespace RestaurantReservation.Db.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
                     b.HasKey("RestaurantId");
 
                     b.ToTable("Restaurants");
@@ -695,8 +614,7 @@ namespace RestaurantReservation.Db.Migrations
                             Address = "123 Main St, Springfield",
                             Name = "The Gourmet Kitchen",
                             OpeningHours = "10:00-23:00",
-                            PhoneNumber = "555-0101",
-                            RowVersion = new byte[0]
+                            PhoneNumber = "555-0101"
                         },
                         new
                         {
@@ -704,8 +622,7 @@ namespace RestaurantReservation.Db.Migrations
                             Address = "45 Oak Avenue, Springfield",
                             Name = "Bella Italia",
                             OpeningHours = "11:00-22:00",
-                            PhoneNumber = "555-0102",
-                            RowVersion = new byte[0]
+                            PhoneNumber = "555-0102"
                         },
                         new
                         {
@@ -713,8 +630,7 @@ namespace RestaurantReservation.Db.Migrations
                             Address = "9 River Road, Shelbyville",
                             Name = "Sushi Zen",
                             OpeningHours = "12:00-22:30",
-                            PhoneNumber = "555-0103",
-                            RowVersion = new byte[0]
+                            PhoneNumber = "555-0103"
                         },
                         new
                         {
@@ -722,8 +638,7 @@ namespace RestaurantReservation.Db.Migrations
                             Address = "78 Elm Street, Shelbyville",
                             Name = "Le Petite Bistro",
                             OpeningHours = "17:00-23:30",
-                            PhoneNumber = "555-0104",
-                            RowVersion = new byte[0]
+                            PhoneNumber = "555-0104"
                         },
                         new
                         {
@@ -731,8 +646,7 @@ namespace RestaurantReservation.Db.Migrations
                             Address = "200 Grand Blvd, Capital City",
                             Name = "The Steakhouse",
                             OpeningHours = "16:00-00:00",
-                            PhoneNumber = "555-0105",
-                            RowVersion = new byte[0]
+                            PhoneNumber = "555-0105"
                         });
                 });
 
@@ -750,63 +664,48 @@ namespace RestaurantReservation.Db.Migrations
                     b.Property<int>("RestaurantId")
                         .HasColumnType("int");
 
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .IsRequired()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
                     b.HasKey("TableId");
 
                     b.HasIndex("RestaurantId");
 
-                    b.ToTable("Tables", t =>
-                        {
-                            t.HasCheckConstraint("CK_Tables_CapacityIsPositive", "[Capacity] > 0");
-                        });
+                    b.ToTable("Tables");
 
                     b.HasData(
                         new
                         {
                             TableId = 1,
                             Capacity = 2,
-                            RestaurantId = 1,
-                            RowVersion = new byte[0]
+                            RestaurantId = 1
                         },
                         new
                         {
                             TableId = 2,
                             Capacity = 4,
-                            RestaurantId = 1,
-                            RowVersion = new byte[0]
+                            RestaurantId = 1
                         },
                         new
                         {
                             TableId = 3,
                             Capacity = 4,
-                            RestaurantId = 2,
-                            RowVersion = new byte[0]
+                            RestaurantId = 2
                         },
                         new
                         {
                             TableId = 4,
                             Capacity = 6,
-                            RestaurantId = 3,
-                            RowVersion = new byte[0]
+                            RestaurantId = 3
                         },
                         new
                         {
                             TableId = 5,
                             Capacity = 2,
-                            RestaurantId = 4,
-                            RowVersion = new byte[0]
+                            RestaurantId = 4
                         },
                         new
                         {
                             TableId = 6,
                             Capacity = 8,
-                            RestaurantId = 5,
-                            RowVersion = new byte[0]
+                            RestaurantId = 5
                         });
                 });
 

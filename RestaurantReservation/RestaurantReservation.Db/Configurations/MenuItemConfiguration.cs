@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RestaurantReservation.Db.Entities;
 
 namespace RestaurantReservation.Db.Configurations;
@@ -9,6 +7,10 @@ public class MenuItemConfiguration : IEntityTypeConfiguration<MenuItem>
     public void Configure(EntityTypeBuilder<MenuItem> builder)
     {
         builder.HasKey(m => m.ItemId);
+        
+        builder.HasAlternateKey(m => new { m.ItemId, m.RestaurantId });
+
+        builder.ToTable(t => t.HasCheckConstraint("CK_MenuItems_PriceIsNotNegative", "[Price] >= 0"));
 
         builder.Property(m => m.Name)
             .IsRequired()
