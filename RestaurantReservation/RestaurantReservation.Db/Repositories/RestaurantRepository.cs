@@ -1,15 +1,20 @@
 using RestaurantReservation.Db.Abstractions;
 using RestaurantReservation.Db.Entities;
+using RestaurantReservation.Db.Results;
 
 namespace RestaurantReservation.Db.Repositories;
 
 public class RestaurantRepository(RestaurantReservationDbContext context) : Repository<Restaurant>(context), IRestaurantRepository
 {
-    public async Task<decimal> GetTotalRevenueAsync(int restaurantId, CancellationToken cancellationToken = default)
+    public async Task<Result<decimal>> GetTotalRevenueAsync(int restaurantId, CancellationToken cancellationToken = default)
     {
-        return await Context.Restaurants
+        var revenue = await Context.Restaurants
             .Where(r => r.RestaurantId == restaurantId)
-            .Select(r => RestaurantReservationDbContext.CalculateRestaurantRevenue(r.RestaurantId))
+            .Select(r => (decimal?)RestaurantReservationDbContext.CalculateRestaurantRevenue(r.RestaurantId))
             .FirstOrDefaultAsync(cancellationToken);
+
+        return revenue is not null
+            ? revenue.Value
+            : Error.NotFound("Restaurants.NotFound", $"Restaurant with id {restaurantId} was not found.");
     }
 }

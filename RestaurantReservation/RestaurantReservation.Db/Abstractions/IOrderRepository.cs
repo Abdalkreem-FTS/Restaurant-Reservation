@@ -1,14 +1,15 @@
 using RestaurantReservation.Db.Entities;
+using RestaurantReservation.Db.Pagination;
 
 namespace RestaurantReservation.Db.Abstractions;
 
 public interface IOrderRepository : IRepository<Order>
 {
     /// <summary>
-    /// Lists the orders placed on a reservation, each with its order items and their menu items.
+    /// Lists a page of orders placed on a reservation, each with its order items and their menu items.
     /// </summary>
-    Task<IReadOnlyList<Order>> ListOrdersAndMenuItemsAsync(int reservationId, CancellationToken cancellationToken = default);
+    Task<PagedResult<Order>> ListOrdersAndMenuItemsAsync(int reservationId, PageRequest page, CancellationToken cancellationToken = default);
 
-    /// <summary>Returns the distinct menu items ordered within the given reservation.</summary>
-    Task<IReadOnlyList<MenuItem>> ListOrderedMenuItemsAsync(int reservationId, CancellationToken cancellationToken = default);
+    /// <summary>Returns a page of the distinct menu items ordered within the given reservation.</summary>
+    Task<PagedResult<MenuItem>> ListOrderedMenuItemsAsync(int reservationId, PageRequest page, CancellationToken cancellationToken = default);
 }

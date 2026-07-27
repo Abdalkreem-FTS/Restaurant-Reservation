@@ -1,52 +1,97 @@
+using System.Linq.Expressions;
 using RestaurantReservation.Db.Abstractions;
+using RestaurantReservation.Db.Entities;
+using RestaurantReservation.Db.Pagination;
+using RestaurantReservation.Db.Results;
 
 namespace RestaurantReservation.Db.Repositories;
 
 /// <summary>
 /// Base repository providing the shared asynchronous CRUD implementation over a
 /// <see cref="RestaurantReservationDbContext" />. Entity-specific repositories derive from this and
-/// add their specialized query methods.
+/// add their specialized query methods. Writes only stage the change on the context; call
+/// <see cref="IUnitOfWork.SaveChangesAsync" /> to commit them.
 /// </summary>
 public abstract class Repository<TEntity>(RestaurantReservationDbContext context) : IRepository<TEntity> where TEntity : class
 {
     protected readonly RestaurantReservationDbContext Context = context ?? throw new ArgumentNullException(nameof(context));
     private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
 
-    public virtual async Task<TEntity?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
+    /// <summary>
+    /// Name of the single integer primary key property, read from the model so the base class can
+    /// order by it without knowing what each entity calls its key. Pagination needs a deterministic
+    /// sort, and the key is the only column guaranteed to provide one.
+    /// </summary>
+    private readonly string _keyName = context.Model
+        .FindEntityType(typeof(TEntity))!
+        .FindPrimaryKey()!
+        .Properties
+        .Single()
+        .Name;
+
+    public virtual async Task<Result<TEntity>> GetByIdAsync(int id, CancellationToken cancellationToken = default)
     {
-        return await _dbSet.FindAsync([id], cancellationToken);
+        var entity = await _dbSet.FindAsync([id], cancellationToken);
+
+        return entity is not null ? entity : NotFound(id);
     }
 
-    public virtual async Task<IReadOnlyList<TEntity>> GetAllAsync(CancellationToken cancellationToken = default)
+    public virtual async Task<PagedResult<TEntity>> GetAllAsync(PageRequest page, CancellationToken cancellationToken = default)
     {
-        return await _dbSet.AsNoTracking().ToListAsync(cancellationToken);
+        return await _dbSet
+            .AsNoTracking()
+            .OrderBy(entity => EF.Property<int>(entity, _keyName))
+            .GetPageAsync(page, cancellationToken);
     }
 
-    public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public virtual async Task<PagedResult<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, PageRequest page, CancellationToken cancellationToken = default)
     {
-        ArgumentNullException.ThrowIfNull(entity);
-        
+        return await _dbSet
+            .AsNoTracking()
+            .Where(predicate)
+            .OrderBy(entity => EF.Property<int>(entity, _keyName))
+            .GetPageAsync(page, cancellationToken);
+    }
+
+    public virtual async Task<Result<TEntity>> AddAsync(TEntity? entity, CancellationToken cancellationToken = default)
+    {
+        if (entity is null)
+        {
+            return Error.Validation("Repository.NullEntity", $"{typeof(TEntity).Name} entity must not be null.");
+        }
+
         await _dbSet.AddAsync(entity, cancellationToken);
-        await Context.SaveChangesAsync(cancellationToken);
-        
+
         return entity;
     }
 
-    public virtual async Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public virtual Result<Updated> Update(TEntity? entity)
     {
-        ArgumentNullException.ThrowIfNull(entity);
-        
+
+        if (entity is null)
+        {
+            return Error.Validation("Repository.NullEntity", $"{typeof(TEntity).Name} entity must not be null.");
+        }
+
         _dbSet.Update(entity);
-        
-        await Context.SaveChangesAsync(cancellationToken);
+
+        return Result.Updated;
     }
 
-    public virtual async Task DeleteAsync(int id, CancellationToken cancellationToken = default)
+    public virtual async Task<Result<Deleted>> DeleteAsync(int id, CancellationToken cancellationToken = default)
     {
-        var entity = await _dbSet.FindAsync([id], cancellationToken) ?? throw new KeyNotFoundException($"{typeof(TEntity).Name} with id {id} was not found.");
+        var entity = await _dbSet.FindAsync([id], cancellationToken);
+
+        if (entity is null)
+        {
+            return NotFound(id);
+        }
 
         _dbSet.Remove(entity);
-        
-        await Context.SaveChangesAsync(cancellationToken);
+
+        return Result.Deleted;
     }
+
+    private static Error NotFound(int id) =>
+        Error.NotFound("Repository.NotFound", $"{typeof(TEntity).Name} with id {id} was not found.");
 }
