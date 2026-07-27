@@ -24,7 +24,28 @@ public class RestaurantReservationDbContext(DbContextOptions<RestaurantReservati
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(RestaurantReservationDbContext).Assembly);
 
+        ConfigureConcurrencyTokens(modelBuilder);
+
         modelBuilder.Seed();
+    }
+
+    /// <summary>
+    /// Maps every <see cref="IVersionedEntity" />'s token to a SQL Server <c>rowversion</c> column.
+    /// Applied by convention rather than repeated across the per-entity configurations so a newly
+    /// added entity cannot silently opt out of lost-update detection.
+    /// </summary>
+    private static void ConfigureConcurrencyTokens(ModelBuilder modelBuilder)
+    {
+        var versionedEntities = modelBuilder.Model
+            .GetEntityTypes()
+            .Where(entityType => typeof(IVersionedEntity).IsAssignableFrom(entityType.ClrType));
+
+        foreach (var entityType in versionedEntities)
+        {
+            modelBuilder.Entity(entityType.ClrType)
+                .Property(nameof(IVersionedEntity.RowVersion))
+                .IsRowVersion();
+        }
     }
     
     // Functions

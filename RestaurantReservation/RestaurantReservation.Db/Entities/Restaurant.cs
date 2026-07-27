@@ -1,6 +1,6 @@
 namespace RestaurantReservation.Db.Entities;
 
-public class Restaurant
+public class Restaurant : IVersionedEntity
 {
     public int RestaurantId { get; set; }
 
@@ -11,6 +11,8 @@ public class Restaurant
     public string PhoneNumber { get; set; } = null!;
 
     public string OpeningHours { get; set; } = null!;
+
+    public byte[] RowVersion { get; set; } = [];
 
     // Navigations
     public ICollection<Table> Tables { get; set; } = new List<Table>();

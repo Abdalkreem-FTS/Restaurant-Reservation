@@ -2,7 +2,7 @@ using RestaurantReservation.Db.Enums;
 
 namespace RestaurantReservation.Db.Entities;
 
-public class Employee
+public class Employee : IVersionedEntity
 {
     public int EmployeeId { get; set; }
 
@@ -13,6 +13,8 @@ public class Employee
     public string LastName { get; set; } = null!;
 
     public EmployeePosition Position { get; set; }
+
+    public byte[] RowVersion { get; set; } = [];
 
     // Navigations
     public Restaurant Restaurant { get; set; } = null!;
