@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RestaurantReservation.Db.Entities;
 
 namespace RestaurantReservation.Db.Configurations;
