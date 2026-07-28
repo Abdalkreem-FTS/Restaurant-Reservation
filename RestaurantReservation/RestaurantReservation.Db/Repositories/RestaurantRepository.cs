@@ -1,10 +1,11 @@
+using Microsoft.Extensions.Logging;
 using RestaurantReservation.Db.Abstractions;
 using RestaurantReservation.Db.Entities;
 using RestaurantReservation.Db.Results;
 
 namespace RestaurantReservation.Db.Repositories;
 
-public class RestaurantRepository(RestaurantReservationDbContext context) : Repository<Restaurant>(context), IRestaurantRepository
+public class RestaurantRepository(RestaurantReservationDbContext context, ILogger<RestaurantRepository> logger) : Repository<Restaurant>(context, logger), IRestaurantRepository
 {
     public async Task<Result<decimal>> GetTotalRevenueAsync(int restaurantId, CancellationToken cancellationToken = default)
     {

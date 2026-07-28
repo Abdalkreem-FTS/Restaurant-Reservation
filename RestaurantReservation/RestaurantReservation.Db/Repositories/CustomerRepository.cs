@@ -1,10 +1,11 @@
+using Microsoft.Extensions.Logging;
 using RestaurantReservation.Db.Abstractions;
 using RestaurantReservation.Db.Entities;
 using RestaurantReservation.Db.Pagination;
 
 namespace RestaurantReservation.Db.Repositories;
 
-public class CustomerRepository(RestaurantReservationDbContext context) : Repository<Customer>(context), ICustomerRepository
+public class CustomerRepository(RestaurantReservationDbContext context, ILogger<CustomerRepository> logger) : Repository<Customer>(context, logger), ICustomerRepository
 {
     public async Task<PagedResult<Customer>> FindCustomersByPartySizeAsync(int partySize, PageRequest page, CancellationToken cancellationToken = default)
     {

@@ -1,10 +1,11 @@
+using Microsoft.Extensions.Logging;
 using RestaurantReservation.Db.Abstractions;
 using RestaurantReservation.Db.Entities;
 using RestaurantReservation.Db.Pagination;
 
 namespace RestaurantReservation.Db.Repositories;
 
-public class OrderRepository(RestaurantReservationDbContext context) : Repository<Order>(context), IOrderRepository
+public class OrderRepository(RestaurantReservationDbContext context, ILogger<OrderRepository> logger) : Repository<Order>(context, logger), IOrderRepository
 {
     /// <summary>
     /// Split into one query per collection level. A single query would left-join the order items onto

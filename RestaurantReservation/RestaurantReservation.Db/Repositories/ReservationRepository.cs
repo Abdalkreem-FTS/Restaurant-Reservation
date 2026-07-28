@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using RestaurantReservation.Db.Abstractions;
 using RestaurantReservation.Db.Entities;
 using RestaurantReservation.Db.Entities.Views;
@@ -5,7 +6,7 @@ using RestaurantReservation.Db.Pagination;
 
 namespace RestaurantReservation.Db.Repositories;
 
-public class ReservationRepository(RestaurantReservationDbContext context) : Repository<Reservation>(context), IReservationRepository
+public class ReservationRepository(RestaurantReservationDbContext context, ILogger<ReservationRepository> logger) : Repository<Reservation>(context, logger), IReservationRepository
 {
     public async Task<PagedResult<Reservation>> GetReservationsByCustomerAsync(int customerId, PageRequest page, CancellationToken cancellationToken = default)
     {

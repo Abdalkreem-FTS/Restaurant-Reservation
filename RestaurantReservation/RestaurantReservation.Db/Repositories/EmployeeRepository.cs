@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using RestaurantReservation.Db.Abstractions;
 using RestaurantReservation.Db.Entities;
 using RestaurantReservation.Db.Entities.Views;
@@ -7,7 +8,7 @@ using RestaurantReservation.Db.Pagination;
 
 namespace RestaurantReservation.Db.Repositories;
 
-public class EmployeeRepository(RestaurantReservationDbContext context) : Repository<Employee>(context), IEmployeeRepository
+public class EmployeeRepository(RestaurantReservationDbContext context, ILogger<EmployeeRepository> logger) : Repository<Employee>(context, logger), IEmployeeRepository
 {
     public async Task<PagedResult<Employee>> ListManagersAsync(PageRequest page, CancellationToken cancellationToken = default)
     {

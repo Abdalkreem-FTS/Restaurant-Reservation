@@ -16,20 +16,33 @@ public static partial class DbExceptionTranslator
     /// message rather than matching the surrounding words, because those words are localized and the
     /// constraint name is not.
     /// </summary>
-    private static readonly string[] _constraintPrefixes = ["PK_", "AK_", "FK_", "IX_", "CK_"];
+    private static readonly string[] ConstraintPrefixes = ["PK_", "AK_", "FK_", "IX_", "CK_"];
 
-    public static Error Translate(Exception exception)
+    public static Error Translate(Exception exception) => Describe(exception).Error;
+
+    /// <summary>
+    /// Translates <paramref name="exception" /> and keeps the store's own identifiers alongside the
+    /// <see cref="Error" />, so a caller that logs the failure can record which constraint or SQL
+    /// Server error produced it without running the message through the patterns a second time.
+    /// </summary>
+    public static DatabaseFailure Describe(Exception exception)
     {
         if (exception is DbUpdateConcurrencyException)
         {
-            return DatabaseError.ConcurrencyConflict;
+            return new DatabaseFailure(DatabaseError.ConcurrencyConflict, null, null);
         }
 
         var sqlException = FindSqlException(exception);
 
-        return sqlException is not null
-            ? FromSqlException(sqlException, WasDeleting(exception))
-            : FromNonSqlException(exception);
+        if (sqlException is null)
+        {
+            return new DatabaseFailure(FromNonSqlException(exception), null, null);
+        }
+
+        return new DatabaseFailure(
+            FromSqlException(sqlException, WasDeleting(exception)),
+            sqlException.Number,
+            ConstraintName(sqlException.Message));
     }
 
     /// <summary>
@@ -109,7 +122,7 @@ public static partial class DbExceptionTranslator
         QuotedToken()
             .Matches(message)
             .Select(match => match.Groups[1].Value)
-            .FirstOrDefault(token => _constraintPrefixes.Any(prefix => token.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)));
+            .FirstOrDefault(token => ConstraintPrefixes.Any(prefix => token.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)));
 
     private static string? FirstQuotedToken(string message) =>
         QuotedToken().Match(message) is { Success: true } match ? match.Groups[1].Value : null;

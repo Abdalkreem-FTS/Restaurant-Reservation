@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
+using Microsoft.Extensions.Logging;
 using RestaurantReservation.Db.Abstractions;
-using RestaurantReservation.Db.Entities;
+using RestaurantReservation.Db.Logging;
 using RestaurantReservation.Db.Pagination;
 using RestaurantReservation.Db.Results;
 
@@ -12,9 +13,16 @@ namespace RestaurantReservation.Db.Repositories;
 /// add their specialized query methods. Writes only stage the change on the context; call
 /// <see cref="IUnitOfWork.SaveChangesAsync" /> to commit them.
 /// </summary>
-public abstract class Repository<TEntity>(RestaurantReservationDbContext context) : IRepository<TEntity> where TEntity : class
+public abstract class Repository<TEntity>(RestaurantReservationDbContext context, ILogger logger) : IRepository<TEntity> where TEntity : class
 {
     protected readonly RestaurantReservationDbContext Context = context ?? throw new ArgumentNullException(nameof(context));
+
+    /// <summary>
+    /// Declared as <see cref="ILogger" /> rather than <see cref="ILogger{TCategoryName}" /> so each
+    /// derived repository can pass its own, which puts its events under its own category.
+    /// </summary>
+    protected readonly ILogger Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
     private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
 
     /// <summary>
@@ -33,7 +41,14 @@ public abstract class Repository<TEntity>(RestaurantReservationDbContext context
     {
         var entity = await _dbSet.FindAsync([id], cancellationToken);
 
-        return entity is not null ? entity : NotFound(id);
+        if (entity is not null)
+        {
+            return entity;
+        }
+
+        RepositoryLog.EntityNotFound(Logger, typeof(TEntity).Name, id);
+
+        return NotFound(id);
     }
 
     public virtual async Task<PagedResult<TEntity>> GetAllAsync(PageRequest page, CancellationToken cancellationToken = default)
@@ -57,6 +72,8 @@ public abstract class Repository<TEntity>(RestaurantReservationDbContext context
     {
         if (entity is null)
         {
+            RepositoryLog.NullEntityRejected(Logger, typeof(TEntity).Name, nameof(AddAsync));
+
             return Error.Validation("Repository.NullEntity", $"{typeof(TEntity).Name} entity must not be null.");
         }
 
@@ -67,9 +84,10 @@ public abstract class Repository<TEntity>(RestaurantReservationDbContext context
 
     public virtual Result<Updated> Update(TEntity? entity)
     {
-
         if (entity is null)
         {
+            RepositoryLog.NullEntityRejected(Logger, typeof(TEntity).Name, nameof(Update));
+
             return Error.Validation("Repository.NullEntity", $"{typeof(TEntity).Name} entity must not be null.");
         }
 
@@ -84,6 +102,8 @@ public abstract class Repository<TEntity>(RestaurantReservationDbContext context
 
         if (entity is null)
         {
+            RepositoryLog.EntityNotFound(Logger, typeof(TEntity).Name, id);
+
             return NotFound(id);
         }
 
@@ -92,6 +112,5 @@ public abstract class Repository<TEntity>(RestaurantReservationDbContext context
         return Result.Deleted;
     }
 
-    private static Error NotFound(int id) =>
-        Error.NotFound("Repository.NotFound", $"{typeof(TEntity).Name} with id {id} was not found.");
+    private static Error NotFound(int id) => Error.NotFound("Repository.NotFound", $"{typeof(TEntity).Name} with id {id} was not found.");
 }
