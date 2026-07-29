@@ -12,11 +12,11 @@ public class CustomerRepository(RestaurantReservationDbContext context, ILogger<
         var totalCount = await Context.Customers
             .CountAsync(c => c.Reservations.Any(r => r.PartySize > partySize), cancellationToken);
 
-        var pagedResult = await Context.Customers
+        var items = await Context.Customers
             .FromSqlInterpolated(
-                $"EXEC dbo.sp_FindCustomersByPartySize @PartySize = {partySize}")
-            .GetPageAsync(page, cancellationToken);
+                $"EXEC dbo.sp_FindCustomersByPartySize @PartySize = {partySize}, @Offset = {page.Skip}, @PageSize = {page.Size}")
+            .ToListAsync(cancellationToken);
 
-        return new PagedResult<Customer>(pagedResult.Items, totalCount, page.Number, page.Size);
+        return new PagedResult<Customer>(items, totalCount, page.Number, page.Size);
     }
 }
