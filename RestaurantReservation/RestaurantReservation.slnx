@@ -1,4 +1,5 @@
 <Solution>
+    <Project Path="RestaurantReservation.Console/RestaurantReservation.Console.csproj" />
     <Project Path="RestaurantReservation.Db/RestaurantReservation.Db.csproj" />
     <Project Path="RestaurantReservation.Tests/RestaurantReservation.Tests.csproj" />
 </Solution>
