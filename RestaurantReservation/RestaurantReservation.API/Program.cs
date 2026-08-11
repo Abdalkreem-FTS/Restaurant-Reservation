@@ -52,6 +52,8 @@ builder.Services
     .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
     .Configure<IOptionsMonitor<JwtOptions>, ILoggerFactory>((bearer, jwt, loggers) =>
     {
+        bearer.MapInboundClaims = false;
+
         bearer.TokenValidationParameters = JwtTokenGenerator.CreateValidationParameters(jwt.CurrentValue);
         bearer.Events = JwtBearerEventHandlers.Create(loggers.CreateLogger(JwtBearerEventHandlers.LoggerCategory));
     });
