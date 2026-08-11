@@ -24,7 +24,7 @@ public class CreateReservationRequestValidator : AbstractValidator<CreateReserva
             .WithMessage("Reservations can only start exactly on the hour.");
 
         RuleFor(request => request.ReservationDate)
-            .GreaterThan(_ => time.GetLocalNow().DateTime)
+            .GreaterThan(_ => time.GetUtcNow())
             .WithMessage("A reservation cannot be made for a time that has already passed.");
     }
 }

@@ -5,5 +5,5 @@ public sealed record ReservationResponse(
     int CustomerId,
     int RestaurantId,
     int TableId,
-    DateTime ReservationDate,
+    DateTimeOffset ReservationDate,
     int PartySize);

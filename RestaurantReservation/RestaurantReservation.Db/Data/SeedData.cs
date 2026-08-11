@@ -158,32 +158,32 @@ public static class SeedData
         new()
         {
             ReservationId = 1, CustomerId = 1, RestaurantId = 1, TableId = 1,
-            ReservationDate = new DateTime(2026, 8, 1, 19, 0, 0), PartySize = 2, TableCapacity = 2
+            ReservationDate = new DateTimeOffset(2026, 8, 1, 19, 0, 0, TimeSpan.Zero), PartySize = 2, TableCapacity = 2
         },
         new()
         {
             ReservationId = 2, CustomerId = 2, RestaurantId = 1, TableId = 2,
-            ReservationDate = new DateTime(2026, 8, 2, 20, 0, 0), PartySize = 4, TableCapacity = 4
+            ReservationDate = new DateTimeOffset(2026, 8, 2, 20, 0, 0, TimeSpan.Zero), PartySize = 4, TableCapacity = 4
         },
         new()
         {
             ReservationId = 3, CustomerId = 3, RestaurantId = 2, TableId = 3,
-            ReservationDate = new DateTime(2026, 8, 3, 18, 0, 0), PartySize = 3, TableCapacity = 4
+            ReservationDate = new DateTimeOffset(2026, 8, 3, 18, 0, 0, TimeSpan.Zero), PartySize = 3, TableCapacity = 4
         },
         new()
         {
             ReservationId = 4, CustomerId = 4, RestaurantId = 3, TableId = 4,
-            ReservationDate = new DateTime(2026, 8, 4, 19, 0, 0), PartySize = 6, TableCapacity = 6
+            ReservationDate = new DateTimeOffset(2026, 8, 4, 19, 0, 0, TimeSpan.Zero), PartySize = 6, TableCapacity = 6
         },
         new()
         {
             ReservationId = 5, CustomerId = 5, RestaurantId = 4, TableId = 5,
-            ReservationDate = new DateTime(2026, 8, 5, 20, 0, 0), PartySize = 2, TableCapacity = 2
+            ReservationDate = new DateTimeOffset(2026, 8, 5, 20, 0, 0, TimeSpan.Zero), PartySize = 2, TableCapacity = 2
         },
         new()
         {
             ReservationId = 6, CustomerId = 1, RestaurantId = 5, TableId = 6,
-            ReservationDate = new DateTime(2026, 8, 6, 21, 0, 0), PartySize = 8, TableCapacity = 8
+            ReservationDate = new DateTimeOffset(2026, 8, 6, 21, 0, 0, TimeSpan.Zero), PartySize = 8, TableCapacity = 8
         }
     ];
 
@@ -192,32 +192,32 @@ public static class SeedData
         new()
         {
             OrderId = 1, ReservationId = 1, EmployeeId = 1, RestaurantId = 1,
-            OrderDate = new DateTime(2026, 8, 1, 19, 30, 0), TotalAmount = 37.49m
+            OrderDate = new DateTimeOffset(2026, 8, 1, 19, 30, 0, TimeSpan.Zero), TotalAmount = 37.49m
         },
         new()
         {
             OrderId = 2, ReservationId = 1, EmployeeId = 2, RestaurantId = 1,
-            OrderDate = new DateTime(2026, 8, 1, 20, 0, 0), TotalAmount = 24.99m
+            OrderDate = new DateTimeOffset(2026, 8, 1, 20, 0, 0, TimeSpan.Zero), TotalAmount = 24.99m
         },
         new()
         {
             OrderId = 3, ReservationId = 2, EmployeeId = 1, RestaurantId = 1,
-            OrderDate = new DateTime(2026, 8, 2, 20, 30, 0), TotalAmount = 49.98m
+            OrderDate = new DateTimeOffset(2026, 8, 2, 20, 30, 0, TimeSpan.Zero), TotalAmount = 49.98m
         },
         new()
         {
             OrderId = 4, ReservationId = 3, EmployeeId = 3, RestaurantId = 2,
-            OrderDate = new DateTime(2026, 8, 3, 19, 0, 0), TotalAmount = 32.50m
+            OrderDate = new DateTimeOffset(2026, 8, 3, 19, 0, 0, TimeSpan.Zero), TotalAmount = 32.50m
         },
         new()
         {
             OrderId = 5, ReservationId = 4, EmployeeId = 5, RestaurantId = 3,
-            OrderDate = new DateTime(2026, 8, 4, 20, 0, 0), TotalAmount = 29.99m
+            OrderDate = new DateTimeOffset(2026, 8, 4, 20, 0, 0, TimeSpan.Zero), TotalAmount = 29.99m
         },
         new()
         {
             OrderId = 6, ReservationId = 5, EmployeeId = 6, RestaurantId = 4,
-            OrderDate = new DateTime(2026, 8, 5, 20, 30, 0), TotalAmount = 26.00m
+            OrderDate = new DateTimeOffset(2026, 8, 5, 20, 30, 0, TimeSpan.Zero), TotalAmount = 26.00m
         }
     ];
 

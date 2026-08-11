@@ -15,7 +15,7 @@ public class Reservation : IVersionedEntity
     /// for one hour, so slots can never partially overlap and a unique index over the table and this
     /// column is enough to prevent double booking.
     /// </summary>
-    public DateTime ReservationDate { get; set; }
+    public DateTimeOffset ReservationDate { get; set; }
 
     public int PartySize { get; set; }
 

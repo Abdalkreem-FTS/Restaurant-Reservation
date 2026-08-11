@@ -4,7 +4,7 @@ public sealed record OrderResponse(
     int OrderId,
     int ReservationId,
     int EmployeeId,
-    DateTime OrderDate,
+    DateTimeOffset OrderDate,
     decimal TotalAmount,
     IReadOnlyList<OrderItemResponse> Items);
 
