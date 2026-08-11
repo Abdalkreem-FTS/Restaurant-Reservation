@@ -1,0 +1,85 @@
+@RestaurantReservation.API_HostAddress = http://localhost:5122
+
+### Reports Healthy only when the database is reachable through RestaurantReservation.Db
+GET {{RestaurantReservation.API_HostAddress}}/health
+Accept: text/plain
+
+### 404 as application/problem+json, showing that the framework's own errors take the same shape
+GET {{RestaurantReservation.API_HostAddress}}/api/no-such-route
+
+### Sign in, every seeded user has the password below; alice.turner is a manager, bob.cook a waiter.
+# @name signIn
+POST {{RestaurantReservation.API_HostAddress}}/api/tokens
+Content-Type: application/json
+
+{
+  "username": "alice.turner",
+  "password": "Password123!"
+}
+
+@token = {{signIn.response.body.accessToken}}
+
+### Every reservation in the system. Staff only — a customer gets 403 here.
+GET {{RestaurantReservation.API_HostAddress}}/api/reservations?page=1&pageSize=5
+Authorization: Bearer {{token}}
+
+### One reservation. A customer may read only their own; anyone else's reads as missing.
+GET {{RestaurantReservation.API_HostAddress}}/api/reservations/1
+Authorization: Bearer {{token}}
+
+### Book a table. The restaurant and the table capacity are derived, so they are not sent.
+# @name createReservation
+POST {{RestaurantReservation.API_HostAddress}}/api/reservations
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "tableId": 1,
+  "reservationDate": "2027-09-09T19:00:00",
+  "partySize": 2
+}
+
+### Replace it. A PUT replaces the whole reservation rather than patching part of it.
+PUT {{RestaurantReservation.API_HostAddress}}/api/reservations/{{createReservation.response.body.reservationId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "tableId": 2,
+  "reservationDate": "2027-09-09T20:00:00",
+  "partySize": 3
+}
+
+### Cancel it.
+DELETE {{RestaurantReservation.API_HostAddress}}/api/reservations/{{createReservation.response.body.reservationId}}
+Authorization: Bearer {{token}}
+
+### RQ4.1 — every employee holding the Manager position. Staff only.
+GET {{RestaurantReservation.API_HostAddress}}/api/employees/managers
+Authorization: Bearer {{token}}
+
+### RQ4.2 — one customer's reservations. A customer may ask only for their own; staff for anyone's.
+GET {{RestaurantReservation.API_HostAddress}}/api/reservations/customer/1
+Authorization: Bearer {{token}}
+
+### RQ4.3 — the orders placed on a reservation, each with its items and their menu items.
+# Reservation 6 exists but has no orders: that answers 200 with totalCount 0, not 404.
+GET {{RestaurantReservation.API_HostAddress}}/api/reservations/1/orders
+Authorization: Bearer {{token}}
+
+### RQ4.4 — the distinct menu items ordered within a reservation.
+GET {{RestaurantReservation.API_HostAddress}}/api/reservations/1/menu-items
+Authorization: Bearer {{token}}
+
+### RQ4.5 — an employee's order figures. Managers may read anyone's, others only their own.
+# Employee 4 has taken no orders, and so reports zeros rather than 404.
+GET {{RestaurantReservation.API_HostAddress}}/api/employees/1/statistics
+Authorization: Bearer {{token}}
+
+### Sign out, which revokes the token above by its 'jti' until it would have expired anyway.
+DELETE {{RestaurantReservation.API_HostAddress}}/api/tokens
+Authorization: Bearer {{token}}
+
+###
