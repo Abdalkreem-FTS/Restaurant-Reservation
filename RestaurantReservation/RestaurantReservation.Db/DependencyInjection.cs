@@ -43,6 +43,7 @@ public static class DependencyInjection
         });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<ISqlScriptExecutor, SqlScriptExecutor>();
 
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IRestaurantRepository, RestaurantRepository>();

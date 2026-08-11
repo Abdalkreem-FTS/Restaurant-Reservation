@@ -1,0 +1,4 @@
+SELECT COUNT(*) AS Combinations
+FROM (SELECT TOP (500) object_id FROM sys.all_objects ORDER BY object_id) AS a
+CROSS JOIN (SELECT TOP (500) object_id FROM sys.all_objects ORDER BY object_id) AS b
+CROSS JOIN (SELECT TOP (500) object_id FROM sys.all_objects ORDER BY object_id) AS c;
