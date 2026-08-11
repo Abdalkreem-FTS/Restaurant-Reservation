@@ -25,5 +25,10 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
             .HasMaxLength(20);
 
         builder.HasIndex(c => c.Email).IsUnique();
+
+        builder.HasOne(c => c.User)
+            .WithOne(u => u.Customer)
+            .HasForeignKey<Customer>(c => c.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

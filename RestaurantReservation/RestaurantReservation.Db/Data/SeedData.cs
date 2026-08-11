@@ -5,7 +5,7 @@ namespace RestaurantReservation.Db.Data;
 
 public static class SeedData
 {
-    private static readonly Restaurant[] _restaurants =
+    private static readonly Restaurant[] Restaurants =
     [
         new()
         {
@@ -34,36 +34,51 @@ public static class SeedData
         }
     ];
 
-    private static readonly Customer[] _customers =
+    private static readonly User[] Users =
+    [
+        new() { UserId = 1, Username = "john.doe", PasswordHash = "AQAAAAIAAYagAAAAEIBPg0ewhJ5n53xz44KlYSSDvhwxyBuRtzQ+ytXmpEao5y/dmWmFOp9jKOJa7ux+bQ==" },
+        new() { UserId = 2, Username = "jane.smith", PasswordHash = "AQAAAAIAAYagAAAAEDm7Y7HkVS/kaIjfrvDj74Oca+8J1GYa7mpUjuUg2ag4HQvo4Jk6tIm47/VGnbmkyw==" },
+        new() { UserId = 3, Username = "michael.johnson", PasswordHash = "AQAAAAIAAYagAAAAEKBdwZsSAeO6CJrYUhTx74qhMv3YxDO/loMRtHxIs7XFN51qIocdI9jRe0Q98PYOTQ==" },
+        new() { UserId = 4, Username = "emily.davis", PasswordHash = "AQAAAAIAAYagAAAAEOTo3Ly50M1eu49u3Mf9qr+NkRO2QRWcNRjZDqBUfNRLz0gEgCsSS4dm4a7B6TCJJg==" },
+        new() { UserId = 5, Username = "david.wilson", PasswordHash = "AQAAAAIAAYagAAAAEBKJGhoqk3DWchXBg6SQULteviXT1GatQtEXHqWnto6/LBam3IdGQWDibFUgf/yk1w==" },
+        new() { UserId = 6, Username = "alice.turner", PasswordHash = "AQAAAAIAAYagAAAAENo/A93E/1FhZg8+OAnOLm70xAqSjW6clyn4AJIpCH4GcsBwuJaxf5UEA2oZ4UQjSQ==" },
+        new() { UserId = 7, Username = "bob.cook", PasswordHash = "AQAAAAIAAYagAAAAEExphGBVuZExPZTlHQ6hQO1GT+nyON6koGot2siIyRA1lE1WzPDn0h1xXAXbpR3Yjw==" },
+        new() { UserId = 8, Username = "carol.white", PasswordHash = "AQAAAAIAAYagAAAAELVW31dCx40O1GBijQ7Upeu9sGZVfCHyQhBLqGR7P9vXO0hcsmrRNx8uuhNB2zQ61Q==" },
+        new() { UserId = 9, Username = "dan.brown", PasswordHash = "AQAAAAIAAYagAAAAEDrJQV8EwE1UtxJtz6GE2j0AHcNTlzBiFcKt8cwXwWC3oBHA95ImfdMgaeXnZs8IRQ==" },
+        new() { UserId = 10, Username = "eve.black", PasswordHash = "AQAAAAIAAYagAAAAEMgwF8w+eAczEKjurnAoIhjX+BxqRpaZxALyFd3XRU3UIcMI/MVHMQRmLPwmkDSX5Q==" },
+        new() { UserId = 11, Username = "frank.green", PasswordHash = "AQAAAAIAAYagAAAAEP0ocSpAttnNpNcwKkhuNIFho6xB3NNWy/FFZp/XaKuS5p3uUkeQ3DfjfmQ/klby4g==" }
+    ];
+
+    private static readonly Customer[] Customers =
     [
         new()
         {
-            CustomerId = 1, FirstName = "John", LastName = "Doe", Email = "john.doe@example.com",
+            CustomerId = 1, UserId = 1, FirstName = "John", LastName = "Doe", Email = "john.doe@example.com",
             PhoneNumber = "555-1001"
         },
         new()
         {
-            CustomerId = 2, FirstName = "Jane", LastName = "Smith", Email = "jane.smith@example.com",
+            CustomerId = 2, UserId = 2, FirstName = "Jane", LastName = "Smith", Email = "jane.smith@example.com",
             PhoneNumber = "555-1002"
         },
         new()
         {
-            CustomerId = 3, FirstName = "Michael", LastName = "Johnson", Email = "michael.johnson@example.com",
+            CustomerId = 3, UserId = 3, FirstName = "Michael", LastName = "Johnson", Email = "michael.johnson@example.com",
             PhoneNumber = "555-1003"
         },
         new()
         {
-            CustomerId = 4, FirstName = "Emily", LastName = "Davis", Email = "emily.davis@example.com",
+            CustomerId = 4, UserId = 4, FirstName = "Emily", LastName = "Davis", Email = "emily.davis@example.com",
             PhoneNumber = "555-1004"
         },
         new()
         {
-            CustomerId = 5, FirstName = "David", LastName = "Wilson", Email = "david.wilson@example.com",
+            CustomerId = 5, UserId = 5, FirstName = "David", LastName = "Wilson", Email = "david.wilson@example.com",
             PhoneNumber = "555-1005"
         }
     ];
 
-    private static readonly Table[] _tables =
+    private static readonly Table[] Tables =
     [
         new() { TableId = 1, RestaurantId = 1, Capacity = 2 },
         new() { TableId = 2, RestaurantId = 1, Capacity = 4 },
@@ -73,38 +88,38 @@ public static class SeedData
         new() { TableId = 6, RestaurantId = 5, Capacity = 8 }
     ];
 
-    private static readonly Employee[] _employees =
+    private static readonly Employee[] Employees =
     [
         new()
         {
-            EmployeeId = 1, RestaurantId = 1, FirstName = "Alice", LastName = "Turner",
+            EmployeeId = 1, UserId = 6, RestaurantId = 1, FirstName = "Alice", LastName = "Turner",
             Position = EmployeePosition.Manager
         },
         new()
         {
-            EmployeeId = 2, RestaurantId = 1, FirstName = "Bob", LastName = "Cook", Position = EmployeePosition.VipOrdersWaiter
+            EmployeeId = 2, UserId = 7, RestaurantId = 1, FirstName = "Bob", LastName = "Cook", Position = EmployeePosition.VipOrdersWaiter
         },
         new()
         {
-            EmployeeId = 3, RestaurantId = 2, FirstName = "Carol", LastName = "White",
+            EmployeeId = 3, UserId = 8, RestaurantId = 2, FirstName = "Carol", LastName = "White",
             Position = EmployeePosition.Manager
         },
         new()
         {
-            EmployeeId = 4, RestaurantId = 2, FirstName = "Dan", LastName = "Brown", Position = EmployeePosition.StandardWaiter
+            EmployeeId = 4, UserId = 9, RestaurantId = 2, FirstName = "Dan", LastName = "Brown", Position = EmployeePosition.StandardWaiter
         },
         new()
         {
-            EmployeeId = 5, RestaurantId = 3, FirstName = "Eve", LastName = "Black", Position = EmployeePosition.Manager
+            EmployeeId = 5, UserId = 10, RestaurantId = 3, FirstName = "Eve", LastName = "Black", Position = EmployeePosition.Manager
         },
         new()
         {
-            EmployeeId = 6, RestaurantId = 4, FirstName = "Frank", LastName = "Green",
+            EmployeeId = 6, UserId = 11, RestaurantId = 4, FirstName = "Frank", LastName = "Green",
             Position = EmployeePosition.AssistantWaiter
         }
     ];
 
-    private static readonly MenuItem[] _menuItems =
+    private static readonly MenuItem[] MenuItems =
     [
         new()
         {
@@ -138,7 +153,7 @@ public static class SeedData
         }
     ];
 
-    private static readonly Reservation[] _reservations =
+    private static readonly Reservation[] Reservations =
     [
         new()
         {
@@ -172,7 +187,7 @@ public static class SeedData
         }
     ];
 
-    private static readonly Order[] _orders =
+    private static readonly Order[] Orders =
     [
         new()
         {
@@ -206,7 +221,7 @@ public static class SeedData
         }
     ];
 
-    private static readonly OrderItem[] _orderItems =
+    private static readonly OrderItem[] OrderItems =
     [
         new() { OrderItemId = 1, OrderId = 1, ItemId = 1, RestaurantId = 1, Quantity = 1, UnitPrice = 24.99m },
         new() { OrderItemId = 2, OrderId = 1, ItemId = 2, RestaurantId = 1, Quantity = 1, UnitPrice = 12.50m },
@@ -220,14 +235,15 @@ public static class SeedData
 
     public static ModelBuilder Seed(this ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Restaurant>().HasData(_restaurants);
-        modelBuilder.Entity<Customer>().HasData(_customers);
-        modelBuilder.Entity<Table>().HasData(_tables);
-        modelBuilder.Entity<Employee>().HasData(_employees);
-        modelBuilder.Entity<MenuItem>().HasData(_menuItems);
-        modelBuilder.Entity<Reservation>().HasData(_reservations);
-        modelBuilder.Entity<Order>().HasData(_orders);
-        modelBuilder.Entity<OrderItem>().HasData(_orderItems);
+        modelBuilder.Entity<User>().HasData(Users);
+        modelBuilder.Entity<Restaurant>().HasData(Restaurants);
+        modelBuilder.Entity<Customer>().HasData(Customers);
+        modelBuilder.Entity<Table>().HasData(Tables);
+        modelBuilder.Entity<Employee>().HasData(Employees);
+        modelBuilder.Entity<MenuItem>().HasData(MenuItems);
+        modelBuilder.Entity<Reservation>().HasData(Reservations);
+        modelBuilder.Entity<Order>().HasData(Orders);
+        modelBuilder.Entity<OrderItem>().HasData(OrderItems);
 
         return modelBuilder;
     }

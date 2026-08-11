@@ -38,7 +38,12 @@ public static class DatabaseError
         "Db.IdentityInsertNotAllowed",
         "An id was supplied for a column the database assigns itself. Leave the id unset when adding a new record.");
 
-    public static Error SaveFailed => Error.Failure(
+    /// <remarks>
+    /// <see cref="ErrorType.Unexpected" /> rather than <see cref="ErrorType.Failure" />: this is the
+    /// catch-all for a <see cref="DbUpdateException" /> nothing else recognised, which is the server's
+    /// problem, not something the caller can fix by changing the request.
+    /// </remarks>
+    public static Error SaveFailed => Error.Unexpected(
         "Db.SaveFailed",
         "The changes could not be saved.");
 
@@ -130,6 +135,18 @@ public static class DatabaseError
         ["IX_Reservations_TableId_ReservationDate"] = Error.Conflict(
             "Reservations.TableAlreadyBooked",
             "That table is already reserved for the selected date and time."),
+
+        ["IX_Users_Username"] = Error.Conflict(
+            "Users.DuplicateUsername",
+            "That username is already taken."),
+
+        ["IX_Customers_UserId"] = Error.Conflict(
+            "Customers.UserAlreadyLinked",
+            "That sign-in is already attached to another customer."),
+
+        ["IX_Employees_UserId"] = Error.Conflict(
+            "Employees.UserAlreadyLinked",
+            "That sign-in is already attached to another employee."),
     };
 
     private static readonly Dictionary<string, Error> CheckViolations = new(StringComparer.OrdinalIgnoreCase)
@@ -204,6 +221,14 @@ public static class DatabaseError
         ["FK_Tables_Restaurants_RestaurantId"] = Error.Validation(
             "Tables.RestaurantNotFound",
             "The selected restaurant does not exist."),
+
+        ["FK_Customers_Users_UserId"] = Error.Validation(
+            "Customers.UserNotFound",
+            "The selected sign-in does not exist."),
+
+        ["FK_Employees_Users_UserId"] = Error.Validation(
+            "Employees.UserNotFound",
+            "The selected sign-in does not exist."),
     };
 
     /// <remarks>
@@ -248,6 +273,14 @@ public static class DatabaseError
         ["FK_Tables_Restaurants_RestaurantId"] = Error.Conflict(
             "Restaurants.HasTables",
             "This restaurant cannot be deleted while tables belong to it."),
+
+        ["FK_Customers_Users_UserId"] = Error.Conflict(
+            "Users.AttachedToCustomer",
+            "This sign-in cannot be deleted while a customer still uses it."),
+
+        ["FK_Employees_Users_UserId"] = Error.Conflict(
+            "Users.AttachedToEmployee",
+            "This sign-in cannot be deleted while an employee still uses it."),
     };
 
     private static Error Lookup(Dictionary<string, Error> catalogue, string? constraint, Error fallback) =>

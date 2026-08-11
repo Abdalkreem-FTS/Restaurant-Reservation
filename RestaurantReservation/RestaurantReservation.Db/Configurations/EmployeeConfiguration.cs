@@ -23,6 +23,11 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
             .HasConversion<string>()
             .HasMaxLength(20);
 
+        builder.HasOne(e => e.User)
+            .WithOne(u => u.Employee)
+            .HasForeignKey<Employee>(e => e.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasOne(e => e.Restaurant)
             .WithMany(r => r.Employees)
             .HasForeignKey(e => e.RestaurantId)
