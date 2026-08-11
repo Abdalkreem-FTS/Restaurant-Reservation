@@ -34,15 +34,16 @@ public static class DependencyInjection
             var loggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
 
             options.AddInterceptors(
-                new CommandLoggingInterceptor(
-                    loggerFactory.CreateLogger<CommandLoggingInterceptor>(),
-                    slowCommandThreshold ?? DefaultSlowCommandThreshold),
-                new TransactionLoggingInterceptor(loggerFactory.CreateLogger<TransactionLoggingInterceptor>()));
-
-            options.ConfigureWarnings(warnings => warnings.Log((RelationalEventId.CommandExecuted, LogLevel.Debug)));
+                new CommandLoggingInterceptor(loggerFactory.CreateLogger<CommandLoggingInterceptor>(),
+                    slowCommandThreshold ?? DefaultSlowCommandThreshold));
+            
+            options.ConfigureWarnings(warnings => warnings.Log(
+                (RelationalEventId.CommandExecuted, LogLevel.Debug),
+                (RelationalEventId.CommandError, LogLevel.Debug)));
         });
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<ISqlScriptExecutor, SqlScriptExecutor>();
 
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<IRestaurantRepository, RestaurantRepository>();

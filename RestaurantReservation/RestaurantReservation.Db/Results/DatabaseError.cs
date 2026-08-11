@@ -60,6 +60,10 @@ public static class DatabaseError
             ? "A required value was not supplied."
             : $"'{column}' is required and was not supplied.");
 
+    public static Error ScriptEmpty => Error.Validation(
+        "Db.ScriptEmpty",
+        "The script contains no SQL to execute.");
+
     public static Error UnexpectedSqlError(int number) => Error.Unexpected(
         "Db.UnexpectedSqlError",
         $"The database reported an unexpected error (SQL error {number}).");
@@ -73,7 +77,7 @@ public static class DatabaseError
     /// </summary>
     public static Error DuplicateKey(string? constraint) => constraint switch
     {
-        not null when _duplicateKeys.TryGetValue(constraint, out var known) => known,
+        not null when DuplicateKeys.TryGetValue(constraint, out var known) => known,
         not null when HasPrefix(constraint, "PK_") => Error.Conflict(
             "Db.DuplicatePrimaryKey",
             $"A record with the same primary key already exists ({constraint})."),
@@ -89,7 +93,7 @@ public static class DatabaseError
     /// A check constraint rejected the value.
     /// </summary>
     public static Error CheckViolation(string? constraint) => Lookup(
-        _checkViolations,
+        CheckViolations,
         constraint,
         Error.Validation(
             "Db.CheckConstraintViolated",
@@ -101,7 +105,7 @@ public static class DatabaseError
     /// but belongs to a different restaurant, which is the whole point of those keys.
     /// </summary>
     public static Error MissingRelatedRecord(string? constraint) => Lookup(
-        _missingRelatedRecords,
+        MissingRelatedRecords,
         constraint,
         Error.Validation(
             "Db.RelatedRecordMissing",
@@ -111,13 +115,13 @@ public static class DatabaseError
     /// A foreign key rejected a delete because rows still point at the record being removed.
     /// </summary>
     public static Error StillReferenced(string? constraint) => Lookup(
-        _stillReferencedRecords,
+        StillReferencedRecords,
         constraint,
         Error.Conflict(
             "Db.StillReferenced",
             "This record cannot be deleted because other records still refer to it."));
 
-    private static readonly Dictionary<string, Error> _duplicateKeys = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly Dictionary<string, Error> DuplicateKeys = new(StringComparer.OrdinalIgnoreCase)
     {
         ["IX_Customers_Email"] = Error.Conflict(
             "Customers.DuplicateEmail",
@@ -128,7 +132,7 @@ public static class DatabaseError
             "That table is already reserved for the selected date and time."),
     };
 
-    private static readonly Dictionary<string, Error> _checkViolations = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly Dictionary<string, Error> CheckViolations = new(StringComparer.OrdinalIgnoreCase)
     {
         ["CK_Reservations_PartySizeIsPositive"] = Error.Validation(
             "Reservations.PartySizeIsNotPositive",
@@ -159,7 +163,7 @@ public static class DatabaseError
             "A table must seat at least one guest."),
     };
 
-    private static readonly Dictionary<string, Error> _missingRelatedRecords = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly Dictionary<string, Error> MissingRelatedRecords = new(StringComparer.OrdinalIgnoreCase)
     {
         ["FK_Reservations_Customers_CustomerId"] = Error.Validation(
             "Reservations.CustomerNotFound",
@@ -207,7 +211,7 @@ public static class DatabaseError
     /// <c>FK_OrderItems_Orders_OrderId_RestaurantId</c> is deliberately absent: it cascades, so
     /// deleting an order takes its items with it rather than being blocked by them.
     /// </remarks>
-    private static readonly Dictionary<string, Error> _stillReferencedRecords = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly Dictionary<string, Error> StillReferencedRecords = new(StringComparer.OrdinalIgnoreCase)
     {
         ["FK_Reservations_Customers_CustomerId"] = Error.Conflict(
             "Customers.HasReservations",

@@ -27,6 +27,7 @@
         <Using Include="RestaurantReservation.Db.Abstractions"/>
         <Using Include="RestaurantReservation.Db.Entities"/>
         <Using Include="RestaurantReservation.Db.Enums"/>
+        <Using Include="RestaurantReservation.Db.Models"/>
         <Using Include="RestaurantReservation.Db.Pagination"/>
         <Using Include="RestaurantReservation.Db.Results"/>
     </ItemGroup>

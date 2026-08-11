@@ -8,12 +8,9 @@ namespace RestaurantReservation.Db;
 
 public class UnitOfWork(RestaurantReservationDbContext context, ILogger<UnitOfWork> logger) : IUnitOfWork
 {
-    private readonly RestaurantReservationDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
-    private readonly ILogger<UnitOfWork> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
     public async Task<Result<IDbContextTransaction>> BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
-        var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        var transaction = await context.Database.BeginTransactionAsync(cancellationToken);
 
         return Result<IDbContextTransaction>.From(transaction);
     }
@@ -22,9 +19,9 @@ public class UnitOfWork(RestaurantReservationDbContext context, ILogger<UnitOfWo
     {
         try
         {
-            var rowsAffected = await _context.SaveChangesAsync(cancellationToken);
+            var rowsAffected = await context.SaveChangesAsync(cancellationToken);
 
-            UnitOfWorkLog.SaveSucceeded(_logger, rowsAffected);
+            logger.LogDebug(DbEvents.SaveSucceeded, "Saved {RowsAffected} change(s)", rowsAffected);
 
             return rowsAffected;
         }
@@ -37,14 +34,15 @@ public class UnitOfWork(RestaurantReservationDbContext context, ILogger<UnitOfWo
             var failure = DbExceptionTranslator.Describe(exception);
             var level = DbLogLevelPolicy.For(failure.Error.Type);
 
-            UnitOfWorkLog.SaveFailed(
-                _logger,
+            logger.Log(
                 level,
+                DbEvents.SaveFailed,
+                level == LogLevel.Error ? exception : null,
+                "Save failed with {ErrorCode} ({ErrorType}), SQL error {SqlErrorNumber}, constraint {ConstraintName}",
                 failure.Error.Code,
                 failure.Error.Type,
                 failure.SqlErrorNumber,
-                failure.ConstraintName,
-                level == LogLevel.Error ? exception : null);
+                failure.ConstraintName);
 
             return failure.Error;
         }

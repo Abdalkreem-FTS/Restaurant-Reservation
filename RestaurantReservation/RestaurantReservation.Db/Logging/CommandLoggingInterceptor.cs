@@ -9,7 +9,7 @@ internal sealed class CommandLoggingInterceptor(ILogger logger, TimeSpan slowCom
 {
     public override DbDataReader ReaderExecuted(DbCommand command, CommandExecutedEventData eventData, DbDataReader result)
     {
-        LogIfSlow(eventData);
+        WarnIfSlow(eventData);
 
         return base.ReaderExecuted(command, eventData, result);
     }
@@ -20,14 +20,14 @@ internal sealed class CommandLoggingInterceptor(ILogger logger, TimeSpan slowCom
         DbDataReader result,
         CancellationToken cancellationToken = default)
     {
-        LogIfSlow(eventData);
+        WarnIfSlow(eventData);
 
         return base.ReaderExecutedAsync(command, eventData, result, cancellationToken);
     }
 
     public override object? ScalarExecuted(DbCommand command, CommandExecutedEventData eventData, object? result)
     {
-        LogIfSlow(eventData);
+        WarnIfSlow(eventData);
 
         return base.ScalarExecuted(command, eventData, result);
     }
@@ -38,14 +38,14 @@ internal sealed class CommandLoggingInterceptor(ILogger logger, TimeSpan slowCom
         object? result,
         CancellationToken cancellationToken = default)
     {
-        LogIfSlow(eventData);
+        WarnIfSlow(eventData);
 
         return base.ScalarExecutedAsync(command, eventData, result, cancellationToken);
     }
 
     public override int NonQueryExecuted(DbCommand command, CommandExecutedEventData eventData, int result)
     {
-        LogIfSlow(eventData);
+        WarnIfSlow(eventData);
 
         return base.NonQueryExecuted(command, eventData, result);
     }
@@ -56,7 +56,7 @@ internal sealed class CommandLoggingInterceptor(ILogger logger, TimeSpan slowCom
         int result,
         CancellationToken cancellationToken = default)
     {
-        LogIfSlow(eventData);
+        WarnIfSlow(eventData);
 
         return base.NonQueryExecutedAsync(command, eventData, result, cancellationToken);
     }
@@ -78,35 +78,40 @@ internal sealed class CommandLoggingInterceptor(ILogger logger, TimeSpan slowCom
         return base.CommandFailedAsync(command, eventData, cancellationToken);
     }
 
-    private void LogIfSlow(CommandExecutedEventData eventData)
+    private void WarnIfSlow(CommandExecutedEventData eventData)
     {
-        if (eventData.Duration >= slowCommandThreshold)
+        if (eventData.Duration < slowCommandThreshold)
         {
-            CommandLog.CommandSlow(
-                logger,
-                (long)eventData.Duration.TotalMilliseconds,
-                (long)slowCommandThreshold.TotalMilliseconds,
-                eventData.Command.CommandText);
+            return;
         }
+
+        logger.LogWarning(
+            DbEvents.CommandSlow,
+            "Database command took {ElapsedMs} ms, above the {ThresholdMs} ms threshold: {CommandText}",
+            (long)eventData.Duration.TotalMilliseconds,
+            (long)slowCommandThreshold.TotalMilliseconds,
+            eventData.Command.CommandText);
     }
-    
+
     private void LogFailure(DbCommand command, CommandErrorEventData eventData)
     {
         var failure = DbExceptionTranslator.Describe(eventData.Exception);
         var level = DbLogLevelPolicy.For(failure.Error.Type);
 
+        // UnitOfWork logs expected save failures as SaveFailed; repeating them here would be noise.
         if (eventData.CommandSource == CommandSource.SaveChanges && level < LogLevel.Error)
         {
             return;
         }
 
-        CommandLog.CommandFailed(
-            logger,
+        logger.Log(
             level,
+            DbEvents.CommandFailed,
+            level == LogLevel.Error ? eventData.Exception : null,
+            "Database command failed after {ElapsedMs} ms with {ErrorCode} (SQL error {SqlErrorNumber}): {CommandText}",
             (long)eventData.Duration.TotalMilliseconds,
             failure.Error.Code,
             failure.SqlErrorNumber,
-            command.CommandText,
-            level == LogLevel.Error ? eventData.Exception : null);
+            command.CommandText);
     }
 }
