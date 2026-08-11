@@ -15,13 +15,13 @@ namespace RestaurantReservation.Db.Repositories;
 /// </summary>
 public abstract class Repository<TEntity>(RestaurantReservationDbContext context, ILogger logger) : IRepository<TEntity> where TEntity : class
 {
-    protected readonly RestaurantReservationDbContext Context = context ?? throw new ArgumentNullException(nameof(context));
+    protected readonly RestaurantReservationDbContext Context = context;
 
     /// <summary>
     /// Declared as <see cref="ILogger" /> rather than <see cref="ILogger{TCategoryName}" /> so each
     /// derived repository can pass its own, which puts its events under its own category.
     /// </summary>
-    protected readonly ILogger Logger = logger ?? throw new ArgumentNullException(nameof(logger));
+    protected readonly ILogger Logger = logger;
 
     private readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
 
@@ -46,7 +46,11 @@ public abstract class Repository<TEntity>(RestaurantReservationDbContext context
             return entity;
         }
 
-        RepositoryLog.EntityNotFound(Logger, typeof(TEntity).Name, id);
+        Logger.LogInformation(
+            DbEvents.EntityNotFound,
+            "{EntityType} {EntityId} was not found",
+            typeof(TEntity).Name,
+            id);
 
         return NotFound(id);
     }
@@ -72,7 +76,11 @@ public abstract class Repository<TEntity>(RestaurantReservationDbContext context
     {
         if (entity is null)
         {
-            RepositoryLog.NullEntityRejected(Logger, typeof(TEntity).Name, nameof(AddAsync));
+            Logger.LogInformation(
+                DbEvents.NullEntityRejected,
+                "A null {EntityType} was rejected by {Operation}",
+                typeof(TEntity).Name,
+                nameof(AddAsync));
 
             return Error.Validation("Repository.NullEntity", $"{typeof(TEntity).Name} entity must not be null.");
         }
@@ -86,7 +94,11 @@ public abstract class Repository<TEntity>(RestaurantReservationDbContext context
     {
         if (entity is null)
         {
-            RepositoryLog.NullEntityRejected(Logger, typeof(TEntity).Name, nameof(Update));
+            Logger.LogInformation(
+                DbEvents.NullEntityRejected,
+                "A null {EntityType} was rejected by {Operation}",
+                typeof(TEntity).Name,
+                nameof(Update));
 
             return Error.Validation("Repository.NullEntity", $"{typeof(TEntity).Name} entity must not be null.");
         }
@@ -102,7 +114,11 @@ public abstract class Repository<TEntity>(RestaurantReservationDbContext context
 
         if (entity is null)
         {
-            RepositoryLog.EntityNotFound(Logger, typeof(TEntity).Name, id);
+            Logger.LogInformation(
+                DbEvents.EntityNotFound,
+                "{EntityType} {EntityId} was not found",
+                typeof(TEntity).Name,
+                id);
 
             return NotFound(id);
         }

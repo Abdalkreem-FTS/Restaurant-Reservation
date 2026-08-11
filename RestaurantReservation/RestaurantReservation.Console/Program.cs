@@ -58,9 +58,18 @@ int exitCode;
 
 try
 {
+    var sqlFile = builder.Configuration["sql-file"];
+
     if (!await DatabaseIsReadyAsync(host.Services, cancellation.Token))
     {
         exitCode = 2;
+    }
+    else if (!string.IsNullOrWhiteSpace(sqlFile))
+    {
+        var timeoutSeconds = builder.Configuration.GetValue<int?>("sql-timeout");
+
+        exitCode = await new SqlScriptRunner(host.Services.GetRequiredService<IServiceScopeFactory>())
+            .RunAsync(sqlFile, timeoutSeconds is { } seconds ? TimeSpan.FromSeconds(seconds) : null, cancellation.Token);
     }
     else
     {

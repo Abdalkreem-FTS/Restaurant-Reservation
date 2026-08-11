@@ -1,0 +1,1 @@
+SELECT CONVERT(TINYINT, 300) AS Impossible;
