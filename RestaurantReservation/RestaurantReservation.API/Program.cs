@@ -60,6 +60,9 @@ builder.Services
 
 builder.Services.AddAuthorizationPolicies();
 
+builder.Services.AddGrpc();
+builder.Services.AddGrpcReflection();
+
 builder.Services.AddOpenApi(options =>
 {
     options.AddDocumentTransformer<ApiDocumentTransformer>();
@@ -103,6 +106,13 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapHealthChecks("/health");
+
+app.MapGrpcService<ReservationsGrpcService>();
+
+if (app.Environment.IsDevelopment())
+{
+    app.MapGrpcReflectionService();
+}
 
 app.MapTokenEndpoints();
 app.MapReservationEndpoints();

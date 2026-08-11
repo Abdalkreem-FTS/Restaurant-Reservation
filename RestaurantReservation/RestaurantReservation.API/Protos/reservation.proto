@@ -1,0 +1,62 @@
+syntax = "proto3";
+
+option csharp_namespace = "RestaurantReservation.API.Grpc";
+
+package restaurantreservation.v1;
+
+import "google/protobuf/empty.proto";
+
+service Reservations {
+  rpc Create (CreateReservationCommand) returns (ReservationMessage);
+  rpc Get    (GetReservationQuery)      returns (ReservationMessage);
+  rpc Update (UpdateReservationCommand) returns (ReservationMessage);
+  rpc Delete (DeleteReservationCommand) returns (google.protobuf.Empty);
+  rpc List   (ListReservationsQuery)    returns (ReservationPage);
+}
+
+message ReservationMessage {
+  int32  reservation_id   = 1;
+  int32  customer_id      = 2;
+  int32  restaurant_id    = 3;
+  int32  table_id         = 4;
+  string reservation_date = 5;
+  int32  party_size       = 6;
+}
+
+message CreateReservationCommand {
+  int32  customer_id      = 1;
+  int32  table_id         = 2;
+  string reservation_date = 3;
+  int32  party_size       = 4;
+}
+
+message GetReservationQuery {
+  int32 reservation_id = 1;
+}
+
+message UpdateReservationCommand {
+  int32  reservation_id   = 1;
+  int32  customer_id      = 2;
+  int32  table_id         = 3;
+  string reservation_date = 4;
+  int32  party_size       = 5;
+}
+
+message DeleteReservationCommand {
+  int32 reservation_id = 1;
+}
+
+message ListReservationsQuery {
+  optional int32 page      = 1;
+  optional int32 page_size = 2;
+}
+
+message ReservationPage {
+  repeated ReservationMessage items = 1;
+  int32 page_number  = 2;
+  int32 page_size    = 3;
+  int32 total_count  = 4;
+  int32 total_pages  = 5;
+  bool  has_previous = 6;
+  bool  has_next     = 7;
+}
