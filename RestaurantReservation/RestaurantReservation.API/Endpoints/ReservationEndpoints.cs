@@ -59,17 +59,17 @@ public static class ReservationEndpoints
     {
         group.MapPost("", Create)
             .WithName(nameof(Create))
-            .WithValidation<CreateReservationRequest>()
             .WithSummary("Book a table. The restaurant and the table capacity follow from the table and are not accepted here.")
             .Produces<ReservationResponse>(StatusCodes.Status201Created)
+            .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapPut("/{id:int}", Update)
             .WithName(nameof(Update))
-            .WithValidation<UpdateReservationRequest>()
             .WithSummary("Replace a reservation.")
             .Produces<ReservationResponse>()
+            .ProducesValidationProblem()
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound)
             .ProducesProblem(StatusCodes.Status409Conflict);
@@ -95,50 +95,39 @@ public static class ReservationEndpoints
     private static async Task<IResult> Get(
         int id,
         ClaimsPrincipal user,
-        IReservationRepository reservations,
+        IReservationService service,
         CancellationToken ct = default)
     {
-        var result = await reservations.GetByIdAsync(id, ct);
+        var result = await service.GetAsync(user, id, ct);
 
         return result.Match(
-            onValue: reservation => user.MayActFor(reservation.CustomerId)
-                ? Results.Ok(reservation.ToResponse())
-                : NotFound(id),
-            onError: _ => NotFound(id));
+            onValue: reservation => Results.Ok(reservation.ToResponse()),
+            onError: errors => errors.ToProblem());
     }
 
     private static async Task<IResult> ListByCustomer(
         int customerId,
         [AsParameters] PageParameters page,
         ClaimsPrincipal user,
-        ICustomerRepository customers,
-        IReservationRepository reservations,
+        IReservationService service,
         CancellationToken ct = default)
     {
-        if (!user.MayActFor(customerId))
-        {
-            return NotYourCustomer("You can only see your own reservations.");
-        }
+        var result = await service.ListForCustomerAsync(user, customerId, page.ToPageRequest(), ct);
 
-        if ((await customers.GetByIdAsync(customerId, ct)).ProblemOrNull() is { } problem)
-        {
-            return problem;
-        }
-
-        var result = await reservations.GetReservationsByCustomerAsync(customerId, page.ToPageRequest(), ct);
-
-        return Results.Ok(result.ToResponse());
+        return result.Match(
+            onValue: reservations => Results.Ok(reservations.ToResponse()),
+            onError: errors => errors.ToProblem());
     }
 
     private static async Task<IResult> ListOrders(
         int reservationId,
         [AsParameters] PageParameters page,
         ClaimsPrincipal user,
-        IReservationRepository reservations,
+        IReservationService service,
         IOrderRepository orders,
         CancellationToken ct = default)
     {
-        if (await Denied(reservationId, user, reservations, ct) is { } problem)
+        if ((await service.GetAsync(user, reservationId, ct)).ProblemOrNull() is { } problem)
         {
             return problem;
         }
@@ -152,11 +141,11 @@ public static class ReservationEndpoints
         int reservationId,
         [AsParameters] PageParameters page,
         ClaimsPrincipal user,
-        IReservationRepository reservations,
+        IReservationService service,
         IOrderRepository orders,
         CancellationToken ct = default)
     {
-        if (await Denied(reservationId, user, reservations, ct) is { } problem)
+        if ((await service.GetAsync(user, reservationId, ct)).ProblemOrNull() is { } problem)
         {
             return problem;
         }
@@ -172,12 +161,7 @@ public static class ReservationEndpoints
         IReservationService service,
         CancellationToken ct = default)
     {
-        if (!user.MayActFor(request.CustomerId))
-        {
-            return NotYourCustomer("You can only make reservations for yourself.");
-        }
-
-        var result = await service.CreateAsync(request, ct);
+        var result = await service.CreateAsync(user, request, ct);
 
         return result.Match(
             onValue: reservation => Results.Created($"/api/reservations/{reservation.ReservationId}", reservation.ToResponse()),
@@ -188,21 +172,10 @@ public static class ReservationEndpoints
         int id,
         UpdateReservationRequest request,
         ClaimsPrincipal user,
-        IReservationRepository reservations,
         IReservationService service,
         CancellationToken ct = default)
     {
-        if (await Denied(id, user, reservations, ct) is { } problem)
-        {
-            return problem;
-        }
-
-        if (!user.MayActFor(request.CustomerId))
-        {
-            return NotYourCustomer("You can only make reservations for yourself.");
-        }
-
-        var result = await service.UpdateAsync(id, request, ct);
+        var result = await service.UpdateAsync(user, id, request, ct);
 
         return result.Match(
             onValue: reservation => Results.Ok(reservation.ToResponse()),
@@ -212,38 +185,13 @@ public static class ReservationEndpoints
     private static async Task<IResult> Delete(
         int id,
         ClaimsPrincipal user,
-        IReservationRepository reservations,
         IReservationService service,
         CancellationToken ct = default)
     {
-        if (await Denied(id, user, reservations, ct) is { } problem)
-        {
-            return problem;
-        }
-
-        var result = await service.DeleteAsync(id, ct);
+        var result = await service.DeleteAsync(user, id, ct);
 
         return result.Match(
             onValue: _ => Results.NoContent(),
             onError: errors => errors.ToProblem());
     }
-
-    private static async Task<IResult?> Denied(
-        int reservationId,
-        ClaimsPrincipal user,
-        IReservationRepository reservations,
-        CancellationToken ct)
-    {
-        var result = await reservations.GetByIdAsync(reservationId, ct);
-
-        return result.Match<IResult?>(
-            onValue: reservation => user.MayActFor(reservation.CustomerId) ? null : NotFound(reservationId),
-            onError: _ => NotFound(reservationId));
-    }
-
-    private static IResult NotFound(int id) =>
-        Error.NotFound("Reservations.NotFound", $"Reservation with id {id} was not found.").ToProblem();
-
-    private static IResult NotYourCustomer(string detail) =>
-        Error.Forbidden("Reservations.NotYourCustomer", detail).ToProblem();
 }
