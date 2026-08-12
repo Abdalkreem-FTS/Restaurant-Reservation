@@ -12,6 +12,8 @@ public static class JwtBearerEventHandlers
 
     private const string FailureDetailKey = "auth:failure-detail";
 
+    private const string ForbiddenDetail = "Your account does not have permission to use this endpoint.";
+
     public static JwtBearerEvents Create(ILogger logger) => new()
     {
         OnTokenValidated = async context =>
@@ -53,20 +55,40 @@ public static class JwtBearerEventHandlers
         {
             context.HandleResponse();
 
+            var detail = ChallengeDetail(context);
+
+            if (context.HttpContext.IsGrpcRequest())
+            {
+                context.HttpContext.WriteRpcStatus(Error.Unauthorized("Auth.Unauthorized", detail));
+
+                return;
+            }
+
             await WriteProblem(
                 context.HttpContext,
                 StatusCodes.Status401Unauthorized,
                 "Unauthorized",
-                ChallengeDetail(context),
+                detail,
                 "Auth.Unauthorized");
         },
 
-        OnForbidden = context => WriteProblem(
-            context.HttpContext,
-            StatusCodes.Status403Forbidden,
-            "Forbidden",
-            "Your account does not have permission to use this endpoint.",
-            "Auth.Forbidden"),
+        OnForbidden = context =>
+        {
+            if (!context.HttpContext.IsGrpcRequest())
+            {
+                return WriteProblem(
+                    context.HttpContext,
+                    StatusCodes.Status403Forbidden,
+                    "Forbidden",
+                    ForbiddenDetail,
+                    "Auth.Forbidden");
+            }
+
+            context.HttpContext.WriteRpcStatus(Error.Forbidden("Auth.Forbidden", ForbiddenDetail));
+
+            return Task.CompletedTask;
+
+        },
     };
 
     /// <summary>
