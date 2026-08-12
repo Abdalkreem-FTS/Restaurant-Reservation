@@ -2,14 +2,11 @@ using FluentValidation;
 
 namespace RestaurantReservation.API.Filters;
 
-public sealed class ValidationFilter<T> : IEndpointFilter where T : class
+public sealed class ValidationFilter<T>(IValidator<T> validator) : IEndpointFilter where T : class
 {
     public async ValueTask<object?> InvokeAsync(EndpointFilterInvocationContext context, EndpointFilterDelegate next)
     {
-        var validator = context.HttpContext.RequestServices.GetService<IValidator<T>>();
-        var argument = context.Arguments.OfType<T>().FirstOrDefault();
-
-        if (validator is null || argument is null)
+        if (context.Arguments.OfType<T>().FirstOrDefault() is not { } argument)
         {
             return await next(context);
         }
