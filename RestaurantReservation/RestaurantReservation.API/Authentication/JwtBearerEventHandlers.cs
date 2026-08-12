@@ -20,8 +20,7 @@ public static class JwtBearerEventHandlers
 
             if (string.IsNullOrEmpty(tokenId))
             {
-                Reject(context.HttpContext, logger, "This token carries no 'jti', so it cannot be checked for revocation.");
-                context.Fail("Missing 'jti' claim.");
+                Reject(context, logger, "This token carries no 'jti', so it cannot be checked for revocation.");
 
                 return;
             }
@@ -30,8 +29,7 @@ public static class JwtBearerEventHandlers
 
             if (await revoked.IsRevokedAsync(tokenId, context.HttpContext.RequestAborted))
             {
-                Reject(context.HttpContext, logger, "This token has been revoked.");
-                context.Fail("Revoked token.");
+                Reject(context, logger, "This token has been revoked.");
             }
         },
 
@@ -105,10 +103,16 @@ public static class JwtBearerEventHandlers
         return string.IsNullOrEmpty(context.ErrorDescription) ? "A valid bearer token is required." : context.ErrorDescription;
     }
 
-    private static void Reject(HttpContext context, ILogger logger, string detail)
+    /// <summary>
+    /// Records the one reason a token was turned away: the caller reads it in the problem detail,
+    /// the log carries it, and authentication fails with it.
+    /// </summary>
+    private static void Reject(TokenValidatedContext context, ILogger logger, string detail)
     {
-        context.Items[FailureDetailKey] = detail;
+        context.HttpContext.Items[FailureDetailKey] = detail;
 
         logger.LogInformation("Bearer token rejected: {Reason}", detail);
+
+        context.Fail(detail);
     }
 }
