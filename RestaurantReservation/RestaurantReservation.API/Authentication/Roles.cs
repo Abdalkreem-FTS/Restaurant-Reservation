@@ -7,6 +7,7 @@ public static class Roles
     public const string Customer = nameof(Customer);
     public const string Employee = nameof(Employee);
 
+    public const string Admin = nameof(Admin);
     public const string Manager = nameof(Manager);
     public const string VipOrdersWaiter = nameof(VipOrdersWaiter);
     public const string StandardWaiter = nameof(StandardWaiter);
@@ -34,6 +35,7 @@ public static class Roles
 
     private static string For(EmployeePosition position) => position switch
     {
+        EmployeePosition.Admin => Admin,
         EmployeePosition.Manager => Manager,
         EmployeePosition.VipOrdersWaiter => VipOrdersWaiter,
         EmployeePosition.StandardWaiter => StandardWaiter,

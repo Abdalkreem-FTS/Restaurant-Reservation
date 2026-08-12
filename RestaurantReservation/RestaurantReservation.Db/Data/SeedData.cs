@@ -46,7 +46,8 @@ public static class SeedData
         new() { UserId = 8, Username = "carol.white", PasswordHash = "AQAAAAIAAYagAAAAELVW31dCx40O1GBijQ7Upeu9sGZVfCHyQhBLqGR7P9vXO0hcsmrRNx8uuhNB2zQ61Q==" },
         new() { UserId = 9, Username = "dan.brown", PasswordHash = "AQAAAAIAAYagAAAAEDrJQV8EwE1UtxJtz6GE2j0AHcNTlzBiFcKt8cwXwWC3oBHA95ImfdMgaeXnZs8IRQ==" },
         new() { UserId = 10, Username = "eve.black", PasswordHash = "AQAAAAIAAYagAAAAEMgwF8w+eAczEKjurnAoIhjX+BxqRpaZxALyFd3XRU3UIcMI/MVHMQRmLPwmkDSX5Q==" },
-        new() { UserId = 11, Username = "frank.green", PasswordHash = "AQAAAAIAAYagAAAAEP0ocSpAttnNpNcwKkhuNIFho6xB3NNWy/FFZp/XaKuS5p3uUkeQ3DfjfmQ/klby4g==" }
+        new() { UserId = 11, Username = "frank.green", PasswordHash = "AQAAAAIAAYagAAAAEP0ocSpAttnNpNcwKkhuNIFho6xB3NNWy/FFZp/XaKuS5p3uUkeQ3DfjfmQ/klby4g==" },
+        new() { UserId = 12, Username = "grace.hall", PasswordHash = "AQAAAAIAAYagAAAAEAXattSIS4ApP9nf7qxL7QLK2TVDauevYDfGbUsZAYtUDRxJ0/LweHYhuNj/ReWHEg==" }
     ];
 
     private static readonly Customer[] Customers =
@@ -116,6 +117,11 @@ public static class SeedData
         {
             EmployeeId = 6, UserId = 11, RestaurantId = 4, FirstName = "Frank", LastName = "Green",
             Position = EmployeePosition.AssistantWaiter
+        },
+        new()
+        {
+            EmployeeId = 7, UserId = 12, RestaurantId = 1, FirstName = "Grace", LastName = "Hall",
+            Position = EmployeePosition.Admin
         }
     ];
 

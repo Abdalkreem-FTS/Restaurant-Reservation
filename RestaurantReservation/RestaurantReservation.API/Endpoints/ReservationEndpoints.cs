@@ -25,8 +25,8 @@ public static class ReservationEndpoints
     {
         group.MapGet("", List)
             .WithName($"{Group}.{nameof(List)}")
-            .RequireAuthorization(AuthorizationPolicies.StaffOnly)
-            .WithSummary("List every reservation. Staff only.")
+            .RequireAuthorization(AuthorizationPolicies.AdminOnly)
+            .WithSummary("List every reservation across the business. Administrators only.")
             .Produces<PagedResponse<ReservationResponse>>()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);

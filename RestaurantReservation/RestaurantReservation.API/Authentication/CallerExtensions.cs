@@ -7,6 +7,7 @@ public static class CallerExtensions
     extension(ClaimsPrincipal caller)
     {
         private bool IsStaff() => caller.IsInRole(Roles.Employee);
+        private bool IsAdmin() => caller.IsInRole(Roles.Admin);
         private bool IsManager() => caller.IsInRole(Roles.Manager);
 
         private int? CustomerId() =>
@@ -18,6 +19,7 @@ public static class CallerExtensions
         public bool MayActFor(int customerId) =>
             caller.IsStaff() || caller.CustomerId() == customerId;
 
-        public bool MayReadFiguresFor(int employeeId) => caller.IsManager() || caller.EmployeeId() == employeeId;
+        public bool MayReadFiguresFor(int employeeId) =>
+            caller.IsAdmin() || caller.IsManager() || caller.EmployeeId() == employeeId;
     }
 }

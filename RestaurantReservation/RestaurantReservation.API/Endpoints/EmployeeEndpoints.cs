@@ -22,7 +22,8 @@ public static class EmployeeEndpoints
     {
         group.MapGet("/managers", ListManagers)
             .WithName($"{Group}.{nameof(ListManagers)}")
-            .WithSummary("List every employee holding the Manager position.")
+            .RequireAuthorization(AuthorizationPolicies.AdminOnly)
+            .WithSummary("List every employee holding the Manager position. Administrators only.")
             .Produces<PagedResponse<EmployeeResponse>>()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);

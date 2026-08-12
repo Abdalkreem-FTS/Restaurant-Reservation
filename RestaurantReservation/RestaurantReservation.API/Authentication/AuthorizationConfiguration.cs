@@ -12,6 +12,10 @@ public static class AuthorizationConfiguration
             .AddPolicy(AuthorizationPolicies.StaffOnly, policy =>
             {
                 policy.RequireRole(Roles.Employee);
+            })
+            .AddPolicy(AuthorizationPolicies.AdminOnly, policy =>
+            {
+                policy.RequireRole(Roles.Admin);
             });
 
         return services;
