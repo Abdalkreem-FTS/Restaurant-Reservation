@@ -3,13 +3,13 @@ using RestaurantReservation.API.Contracts.Reservations;
 namespace RestaurantReservation.API.Services;
 
 public class ReservationService(
-    IReservationRepository reservations,
-    ITableRepository tables,
+    IReservationRepository reservationsRepository,
+    ITableRepository tablesRepository,
     IUnitOfWork unitOfWork) : IReservationService
 {
     public async Task<Result<Reservation>> CreateAsync(CreateReservationRequest request, CancellationToken cancellationToken = default)
     {
-        var table = await tables.GetByIdAsync(request.TableId, cancellationToken);
+        var table = await tablesRepository.GetByIdAsync(request.TableId, cancellationToken);
 
         if (table.IsError)
         {
@@ -20,7 +20,7 @@ public class ReservationService(
 
         Apply(reservation, request.CustomerId, request.PartySize, table.Value);
 
-        var added = await reservations.AddAsync(reservation, cancellationToken);
+        var added = await reservationsRepository.AddAsync(reservation, cancellationToken);
 
         if (added.IsError)
         {
@@ -37,14 +37,14 @@ public class ReservationService(
         UpdateReservationRequest request,
         CancellationToken cancellationToken = default)
     {
-        var existing = await reservations.GetByIdAsync(reservationId, cancellationToken);
+        var existing = await reservationsRepository.GetByIdAsync(reservationId, cancellationToken);
 
         if (existing.IsError)
         {
             return existing.Errors;
         }
 
-        var table = await tables.GetByIdAsync(request.TableId, cancellationToken);
+        var table = await tablesRepository.GetByIdAsync(request.TableId, cancellationToken);
 
         if (table.IsError)
         {
@@ -57,7 +57,7 @@ public class ReservationService(
 
         Apply(reservation, request.CustomerId, request.PartySize, table.Value);
 
-        var updated = reservations.Update(reservation);
+        var updated = reservationsRepository.Update(reservation);
 
         if (updated.IsError)
         {
@@ -71,7 +71,7 @@ public class ReservationService(
 
     public async Task<Result<Deleted>> DeleteAsync(int reservationId, CancellationToken cancellationToken = default)
     {
-        var deleted = await reservations.DeleteAsync(reservationId, cancellationToken);
+        var deleted = await reservationsRepository.DeleteAsync(reservationId, cancellationToken);
 
         if (deleted.IsError)
         {
