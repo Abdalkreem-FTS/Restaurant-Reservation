@@ -16,14 +16,14 @@ public class ReservationsGrpcService(
 {
     public override async Task<ReservationMessage> Create(CreateReservationCommand request, ServerCallContext context)
     {
-        var createRequest = request.ToRequest();
-
-        await Validate(createValidator, createRequest, context);
-
-        if (!context.GetHttpContext().User.MayActFor(createRequest.CustomerId))
+        if (!context.GetHttpContext().User.MayActFor(request.CustomerId))
         {
             throw NotYourCustomer();
         }
+
+        var createRequest = request.ToRequest();
+
+        await Validate(createValidator, createRequest, context);
 
         var result = await service.CreateAsync(createRequest, context.CancellationToken);
 
@@ -46,16 +46,16 @@ public class ReservationsGrpcService(
 
     public override async Task<ReservationMessage> Update(UpdateReservationCommand request, ServerCallContext context)
     {
-        var updateRequest = request.ToRequest();
-
-        await Validate(updateValidator, updateRequest, context);
-
         await EnsureMine(request.ReservationId, context);
 
-        if (!context.GetHttpContext().User.MayActFor(updateRequest.CustomerId))
+        if (!context.GetHttpContext().User.MayActFor(request.CustomerId))
         {
             throw NotYourCustomer();
         }
+
+        var updateRequest = request.ToRequest();
+
+        await Validate(updateValidator, updateRequest, context);
 
         var result = await service.UpdateAsync(request.ReservationId, updateRequest, context.CancellationToken);
 
