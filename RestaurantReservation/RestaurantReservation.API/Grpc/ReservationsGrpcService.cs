@@ -14,61 +14,61 @@ public class ReservationsGrpcService(
     IValidator<UpdateReservationRequest> updateValidator)
     : Reservations.ReservationsBase
 {
-    public override async Task<ReservationMessage> Create(CreateReservationCommand command, ServerCallContext context)
+    public override async Task<ReservationMessage> Create(CreateReservationCommand request, ServerCallContext context)
     {
-        var request = command.ToRequest();
+        var createRequest = request.ToRequest();
 
-        await Validate(createValidator, request, context);
+        await Validate(createValidator, createRequest, context);
 
-        if (!context.GetHttpContext().User.MayActFor(request.CustomerId))
+        if (!context.GetHttpContext().User.MayActFor(createRequest.CustomerId))
         {
             throw NotYourCustomer();
         }
 
-        var result = await service.CreateAsync(request, context.CancellationToken);
+        var result = await service.CreateAsync(createRequest, context.CancellationToken);
 
         return result.Match(
             onValue: reservation => reservation.ToMessage(),
             onError: errors => throw errors.ToRpcException());
     }
 
-    public override async Task<ReservationMessage> Get(GetReservationQuery query, ServerCallContext context)
+    public override async Task<ReservationMessage> Get(GetReservationQuery request, ServerCallContext context)
     {
-        var result = await reservations.GetByIdAsync(query.ReservationId, context.CancellationToken);
+        var result = await reservations.GetByIdAsync(request.ReservationId, context.CancellationToken);
         var user = context.GetHttpContext().User;
 
         return result.Match(
             onValue: reservation => user.MayActFor(reservation.CustomerId)
                 ? reservation.ToMessage()
-                : throw NotFound(query.ReservationId),
-            onError: _ => throw NotFound(query.ReservationId));
+                : throw NotFound(request.ReservationId),
+            onError: _ => throw NotFound(request.ReservationId));
     }
 
-    public override async Task<ReservationMessage> Update(UpdateReservationCommand command, ServerCallContext context)
+    public override async Task<ReservationMessage> Update(UpdateReservationCommand request, ServerCallContext context)
     {
-        var request = command.ToRequest();
+        var updateRequest = request.ToRequest();
 
-        await Validate(updateValidator, request, context);
+        await Validate(updateValidator, updateRequest, context);
 
-        await EnsureMine(command.ReservationId, context);
+        await EnsureMine(request.ReservationId, context);
 
-        if (!context.GetHttpContext().User.MayActFor(request.CustomerId))
+        if (!context.GetHttpContext().User.MayActFor(updateRequest.CustomerId))
         {
             throw NotYourCustomer();
         }
 
-        var result = await service.UpdateAsync(command.ReservationId, request, context.CancellationToken);
+        var result = await service.UpdateAsync(request.ReservationId, updateRequest, context.CancellationToken);
 
         return result.Match(
             onValue: reservation => reservation.ToMessage(),
             onError: errors => throw errors.ToRpcException());
     }
 
-    public override async Task<Empty> Delete(DeleteReservationCommand command, ServerCallContext context)
+    public override async Task<Empty> Delete(DeleteReservationCommand request, ServerCallContext context)
     {
-        await EnsureMine(command.ReservationId, context);
+        await EnsureMine(request.ReservationId, context);
 
-        var result = await service.DeleteAsync(command.ReservationId, context.CancellationToken);
+        var result = await service.DeleteAsync(request.ReservationId, context.CancellationToken);
 
         return result.Match(
             onValue: _ => new Empty(),
@@ -76,9 +76,9 @@ public class ReservationsGrpcService(
     }
 
     [Authorize(Policy = AuthorizationPolicies.StaffOnly)]
-    public override async Task<ReservationPage> List(ListReservationsQuery query, ServerCallContext context)
+    public override async Task<ReservationPage> List(ListReservationsQuery request, ServerCallContext context)
     {
-        var page = await reservations.GetAllAsync(query.ToPageRequest(), context.CancellationToken);
+        var page = await reservations.GetAllAsync(request.ToPageRequest(), context.CancellationToken);
 
         return page.ToMessage();
     }
