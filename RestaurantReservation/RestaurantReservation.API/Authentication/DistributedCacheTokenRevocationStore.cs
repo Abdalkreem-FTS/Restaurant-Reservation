@@ -11,7 +11,7 @@ public sealed class DistributedCacheTokenRevocationStore(
 {
     private static readonly TimeSpan ExpiryBuffer = TimeSpan.FromMinutes(1);
 
-    private static readonly byte[] Revoked = [.. "1"u8];
+    private static readonly byte[] Revoked = "1"u8.ToArray();
 
     public async Task<bool> RevokeAsync(string tokenId, DateTimeOffset expiresAt, CancellationToken cancellationToken = default)
     {
