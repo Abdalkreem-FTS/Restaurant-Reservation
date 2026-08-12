@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using RestaurantReservation.API.Contracts.Employees;
+using RestaurantReservation.Db.Models;
 
 namespace RestaurantReservation.API.Endpoints;
 
@@ -28,9 +29,16 @@ public static class EmployeeEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
+        group.MapGet("/{employeeId:int}/average-order-amount", GetAverageOrderAmount)
+            .WithName($"{Group}.{nameof(GetAverageOrderAmount)}")
+            .WithSummary("The average amount of one employee's orders, under the name the specification gives it.")
+            .Produces<EmployeeAverageOrderAmountResponse>()
+            .ProducesProblem(StatusCodes.Status403Forbidden)
+            .ProducesProblem(StatusCodes.Status404NotFound);
+
         group.MapGet("/{employeeId:int}/statistics", GetStatistics)
             .WithName($"{Group}.{nameof(GetStatistics)}")
-            .WithSummary("Order figures for one employee. Managers may read anyone's, others only their own. An employee with no orders reports zeros.")
+            .WithSummary("Order figures for one employee, the average among them. Managers and administrators may read anyone's, others only their own. An employee with no orders reports zeros.")
             .Produces<EmployeeStatisticsResponse>()
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
@@ -46,26 +54,55 @@ public static class EmployeeEndpoints
         return Results.Ok(result.ToResponse());
     }
 
+    private static async Task<IResult> GetAverageOrderAmount(
+        int employeeId,
+        ClaimsPrincipal user,
+        IEmployeeRepository employees,
+        CancellationToken ct = default)
+    {
+        var result = await ReadFigures(employeeId, user, employees, ct);
+
+        return result.Match(
+            onValue: statistics => Results.Ok(statistics.ToAverageOrderAmountResponse(employeeId)),
+            onError: errors => errors.ToProblem());
+    }
+
     private static async Task<IResult> GetStatistics(
         int employeeId,
         ClaimsPrincipal user,
         IEmployeeRepository employees,
         CancellationToken ct = default)
     {
+        var result = await ReadFigures(employeeId, user, employees, ct);
+
+        return result.Match(
+            onValue: statistics => Results.Ok(statistics.ToResponse(employeeId)),
+            onError: errors => errors.ToProblem());
+    }
+
+    /// <summary>
+    /// The gate both figure endpoints share: may this caller read them, and does the employee exist.
+    /// </summary>
+    private static async Task<Result<OrderAmountStatistics>> ReadFigures(
+        int employeeId,
+        ClaimsPrincipal user,
+        IEmployeeRepository employees,
+        CancellationToken ct)
+    {
         if (!user.MayReadFiguresFor(employeeId))
         {
             return Error.Forbidden(
                 "Employees.FiguresNotYours",
-                "Only a manager can read another employee's order figures.").ToProblem();
+                "Only a manager or an administrator can read another employee's order figures.");
         }
 
-        if ((await employees.GetByIdAsync(employeeId, ct)).ProblemOrNull() is { } problem)
+        var employee = await employees.GetByIdAsync(employeeId, ct);
+
+        if (employee.IsError)
         {
-            return problem;
+            return employee.Errors;
         }
 
-        var statistics = await employees.GetOrderAmountStatisticsAsync(employeeId, ct);
-
-        return Results.Ok(statistics.ToResponse(employeeId));
+        return await employees.GetOrderAmountStatisticsAsync(employeeId, ct);
     }
 }

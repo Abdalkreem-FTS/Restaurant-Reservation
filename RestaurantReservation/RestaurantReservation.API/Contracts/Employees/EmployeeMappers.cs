@@ -15,6 +15,11 @@ public static class EmployeeMappers
     public static PagedResponse<EmployeeResponse> ToResponse(this PagedResult<Employee> page) =>
         page.ToPagedResponse(ToResponse);
 
+    public static EmployeeAverageOrderAmountResponse ToAverageOrderAmountResponse(
+        this OrderAmountStatistics statistics,
+        int employeeId) =>
+        new(employeeId, statistics.Average);
+
     public static EmployeeStatisticsResponse ToResponse(this OrderAmountStatistics statistics, int employeeId) =>
         new(
             employeeId,

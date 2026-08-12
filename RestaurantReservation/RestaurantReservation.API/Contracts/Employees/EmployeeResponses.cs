@@ -7,6 +7,10 @@ public sealed record EmployeeResponse(
     string LastName,
     string Position);
 
+public sealed record EmployeeAverageOrderAmountResponse(
+    int EmployeeId,
+    decimal AverageOrderAmount);
+
 public sealed record EmployeeStatisticsResponse(
     int EmployeeId,
     int OrderCount,
