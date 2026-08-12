@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace RestaurantReservation.API.Errors;
 
-public class GlobalExceptionHandler(
+public sealed class GlobalExceptionHandler(
     IProblemDetailsService problemDetailsService,
     IHostEnvironment environment,
     ILogger<GlobalExceptionHandler> logger)
@@ -31,8 +31,6 @@ public class GlobalExceptionHandler(
 
         httpContext.Response.StatusCode = statusCode;
 
-        var isDevelopment = environment.IsDevelopment();
-
         return await problemDetailsService.TryWriteAsync(new ProblemDetailsContext
         {
             HttpContext = httpContext,
@@ -42,12 +40,20 @@ public class GlobalExceptionHandler(
                 Status = statusCode,
 
                 Title = isClientError ? null : "An unexpected error occurred.",
-                Detail = isDevelopment
-                    ? exception.Message
-                    : isClientError
-                        ? "The request could not be read. Check that the body is valid JSON and that every field has the type this endpoint expects."
-                        : "An unexpected server error occurred."
+                Detail = ExceptionDetail(exception, isClientError, environment.IsDevelopment())
             }
         });
+    }
+
+    private static string ExceptionDetail(Exception exception, bool isClientError, bool isDevelopment)
+    {
+        if (isDevelopment)
+        {
+            return exception.Message;
+        }
+
+        return isClientError
+            ? "The request could not be read. Check that the body is valid JSON and that every field has the type this endpoint expects."
+            : "An unexpected server error occurred.";
     }
 }
