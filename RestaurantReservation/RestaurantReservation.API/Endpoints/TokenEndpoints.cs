@@ -2,7 +2,6 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.JsonWebTokens;
 using RestaurantReservation.API.Contracts.Tokens;
-using RestaurantReservation.API.Filters;
 
 namespace RestaurantReservation.API.Endpoints;
 

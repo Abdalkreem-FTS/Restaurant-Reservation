@@ -1,5 +1,3 @@
-using RestaurantReservation.API.Contracts.Common;
-
 namespace RestaurantReservation.API.Contracts.Orders;
 
 public static class OrderMappers

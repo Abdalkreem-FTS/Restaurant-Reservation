@@ -1,4 +1,3 @@
-using RestaurantReservation.API.Contracts.Common;
 using RestaurantReservation.Db.Models;
 
 namespace RestaurantReservation.API.Contracts.Employees;

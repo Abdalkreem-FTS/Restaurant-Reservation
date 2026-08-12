@@ -1,9 +1,7 @@
 using System.Security.Claims;
-using RestaurantReservation.API.Contracts.Common;
 using RestaurantReservation.API.Contracts.MenuItems;
 using RestaurantReservation.API.Contracts.Orders;
 using RestaurantReservation.API.Contracts.Reservations;
-using RestaurantReservation.API.Filters;
 
 namespace RestaurantReservation.API.Endpoints;
 
