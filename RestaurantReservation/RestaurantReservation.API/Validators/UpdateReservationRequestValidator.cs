@@ -5,7 +5,7 @@ namespace RestaurantReservation.API.Validators;
 
 public class UpdateReservationRequestValidator : AbstractValidator<UpdateReservationRequest>
 {
-    public UpdateReservationRequestValidator()
+    public UpdateReservationRequestValidator(TimeProvider time)
     {
         RuleFor(request => request.CustomerId)
             .GreaterThan(0)
@@ -22,5 +22,9 @@ public class UpdateReservationRequestValidator : AbstractValidator<UpdateReserva
         RuleFor(request => request.ReservationDate)
             .Must(date => date.Ticks % TimeSpan.TicksPerHour == 0)
             .WithMessage("Reservations can only start exactly on the hour.");
+
+        RuleFor(request => request.ReservationDate)
+            .GreaterThan(_ => time.GetUtcNow())
+            .WithMessage("A reservation cannot be moved to a time that has already passed.");
     }
 }
