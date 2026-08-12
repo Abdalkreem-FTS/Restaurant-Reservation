@@ -1,4 +1,4 @@
-using System.Globalization;
+using Google.Protobuf.WellKnownTypes;
 using RestaurantReservation.API.Contracts.Reservations;
 
 namespace RestaurantReservation.API.Grpc;
@@ -6,10 +6,10 @@ namespace RestaurantReservation.API.Grpc;
 public static class ReservationGrpcMappers
 {
     public static CreateReservationRequest ToRequest(this CreateReservationCommand command) =>
-        new(command.CustomerId, command.TableId, ParseDate(command.ReservationDate), command.PartySize);
+        new(command.CustomerId, command.TableId, command.ReservationDate.ToDateTimeOffsetOrDefault(), command.PartySize);
 
     public static UpdateReservationRequest ToRequest(this UpdateReservationCommand command) =>
-        new(command.CustomerId, command.TableId, ParseDate(command.ReservationDate), command.PartySize);
+        new(command.CustomerId, command.TableId, command.ReservationDate.ToDateTimeOffsetOrDefault(), command.PartySize);
 
     public static PageRequest ToPageRequest(this ListReservationsQuery query) => new()
     {
@@ -23,7 +23,7 @@ public static class ReservationGrpcMappers
         CustomerId = reservation.CustomerId,
         RestaurantId = reservation.RestaurantId,
         TableId = reservation.TableId,
-        ReservationDate = reservation.ReservationDate.ToString("O", CultureInfo.InvariantCulture),
+        ReservationDate = Timestamp.FromDateTimeOffset(reservation.ReservationDate),
         PartySize = reservation.PartySize
     };
 
@@ -44,10 +44,11 @@ public static class ReservationGrpcMappers
         return message;
     }
 
-    private static DateTimeOffset ParseDate(string value) =>
-        DateTimeOffset.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var parsed)
-            ? parsed
-            : throw Error.Failure(
-                "Reservations.ReservationDateNotParsed",
-                $"'{value}' is not a date and time with an offset, for example 2028-03-03T19:00:00+05:30.").ToRpcException();
+    /// <summary>
+    /// An unset message field arrives as null. Mapping it to the default date rather than throwing
+    /// keeps this layer incapable of failing, so the caller is authorized before anything about the
+    /// payload is judged; the validator then reports the date as being in the past.
+    /// </summary>
+    private static DateTimeOffset ToDateTimeOffsetOrDefault(this Timestamp? timestamp) =>
+        timestamp?.ToDateTimeOffset() ?? default;
 }

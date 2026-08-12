@@ -5,6 +5,7 @@ option csharp_namespace = "RestaurantReservation.API.Grpc";
 package restaurantreservation.v1;
 
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 
 service Reservations {
   rpc Create (CreateReservationCommand) returns (ReservationMessage);
@@ -15,19 +16,19 @@ service Reservations {
 }
 
 message ReservationMessage {
-  int32  reservation_id   = 1;
-  int32  customer_id      = 2;
-  int32  restaurant_id    = 3;
-  int32  table_id         = 4;
-  string reservation_date = 5;
-  int32  party_size       = 6;
+  int32  reservation_id                      = 1;
+  int32  customer_id                         = 2;
+  int32  restaurant_id                       = 3;
+  int32  table_id                            = 4;
+  google.protobuf.Timestamp reservation_date = 5;
+  int32  party_size                          = 6;
 }
 
 message CreateReservationCommand {
-  int32  customer_id      = 1;
-  int32  table_id         = 2;
-  string reservation_date = 3;
-  int32  party_size       = 4;
+  int32  customer_id                         = 1;
+  int32  table_id                            = 2;
+  google.protobuf.Timestamp reservation_date = 3;
+  int32  party_size                          = 4;
 }
 
 message GetReservationQuery {
@@ -35,11 +36,11 @@ message GetReservationQuery {
 }
 
 message UpdateReservationCommand {
-  int32  reservation_id   = 1;
-  int32  customer_id      = 2;
-  int32  table_id         = 3;
-  string reservation_date = 4;
-  int32  party_size       = 5;
+  int32  reservation_id                      = 1;
+  int32  customer_id                         = 2;
+  int32  table_id                            = 3;
+  google.protobuf.Timestamp reservation_date = 4;
+  int32  party_size                          = 5;
 }
 
 message DeleteReservationCommand {
