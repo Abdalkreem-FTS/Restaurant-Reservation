@@ -4,6 +4,12 @@ namespace RestaurantReservation.API.Errors;
 
 public static class ProblemExtensions
 {
+    /// <summary>
+    /// <see cref="ErrorType.Validation"/> means a field failed validation and its
+    /// <see cref="Error.Code"/> is the field's name, which becomes a key under <c>errors</c>.
+    /// Every other type carries a dotted domain code that becomes <c>errorCode</c>. Keeping the
+    /// two apart is what stops one field from holding both conventions.
+    /// </summary>
     public static IResult ToProblem(this List<Error> errors)
     {
         if (errors.Count == 0)

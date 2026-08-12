@@ -194,7 +194,7 @@ public class ReservationService(
         "Reservations.NotYourCustomer",
         description);
 
-    private static Error TableNotFound(int tableId) => Error.Validation(
+    private static Error TableNotFound(int tableId) => Error.Failure(
         "Reservations.TableNotFound",
         $"Table {tableId} does not exist.");
 }

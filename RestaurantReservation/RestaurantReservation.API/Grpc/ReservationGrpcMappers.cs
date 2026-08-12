@@ -47,7 +47,7 @@ public static class ReservationGrpcMappers
     private static DateTimeOffset ParseDate(string value) =>
         DateTimeOffset.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var parsed)
             ? parsed
-            : throw Error.Validation(
+            : throw Error.Failure(
                 "Reservations.ReservationDateNotParsed",
                 $"'{value}' is not a date and time with an offset, for example 2028-03-03T19:00:00+05:30.").ToRpcException();
 }

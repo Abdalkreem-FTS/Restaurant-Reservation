@@ -56,7 +56,7 @@ public static class TokenEndpoints
 
         if (tokenId is null || !long.TryParse(expiry, out var expiresAtUnixSeconds))
         {
-            return Error.Validation("Auth.TokenNotRevocable", "The token is missing the claims needed to revoke it.").ToProblem();
+            return Error.Failure("Auth.TokenNotRevocable", "The token is missing the claims needed to revoke it.").ToProblem();
         }
 
         var wasRevoked = await revoked.RevokeAsync(tokenId, DateTimeOffset.FromUnixTimeSeconds(expiresAtUnixSeconds), ct);

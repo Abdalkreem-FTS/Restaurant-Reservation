@@ -38,7 +38,7 @@ public static class GrpcErrorExtensions
 
     private static StatusCode ToStatusCode(ErrorType type) => type switch
     {
-        ErrorType.Validation => StatusCode.InvalidArgument,
+        ErrorType.Validation or ErrorType.Failure => StatusCode.InvalidArgument,
         ErrorType.NotFound => StatusCode.NotFound,
         ErrorType.Conflict => StatusCode.AlreadyExists,
         ErrorType.Unauthorized => StatusCode.Unauthenticated,
