@@ -94,12 +94,11 @@ app.UseExceptionHandler();
 
 app.UseStatusCodePages();
 
-app.UseHttpsRedirection();
-
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
     app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "Restaurant Reservation API v1"));
+    app.MapGrpcReflectionService();
 }
 
 app.UseAuthentication();
@@ -108,11 +107,6 @@ app.UseAuthorization();
 app.MapHealthChecks("/health");
 
 app.MapGrpcService<ReservationsGrpcService>();
-
-if (app.Environment.IsDevelopment())
-{
-    app.MapGrpcReflectionService();
-}
 
 app.MapTokenEndpoints();
 app.MapReservationEndpoints();
