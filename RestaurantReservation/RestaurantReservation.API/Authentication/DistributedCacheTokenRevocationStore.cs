@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Options;
 
 namespace RestaurantReservation.API.Authentication;
 
@@ -7,6 +8,7 @@ namespace RestaurantReservation.API.Authentication;
 /// </summary>
 public sealed class DistributedCacheTokenRevocationStore(
     IDistributedCache cache,
+    IOptionsMonitor<TokenRevocationOptions> options,
     ILogger<DistributedCacheTokenRevocationStore> logger) : ITokenRevocationStore
 {
     private static readonly TimeSpan ExpiryBuffer = TimeSpan.FromMinutes(1);
@@ -48,9 +50,18 @@ public sealed class DistributedCacheTokenRevocationStore(
         }
         catch (Exception exception) when (exception is not OperationCanceledException)
         {
-            logger.LogWarning(exception, "Could not check whether token {TokenId} was revoked; treating it as valid", tokenId);
+            var failOpen = options.CurrentValue.FailOpenOnCacheFailure;
 
-            return false;
+            logger.Log(
+                failOpen ? LogLevel.Warning : LogLevel.Error,
+                exception,
+                "Could not check whether token {TokenId} was revoked; {Decision} because {Option} is {Setting}",
+                tokenId,
+                failOpen ? "letting it through" : "rejecting it",
+                $"{TokenRevocationOptions.SectionName}:{nameof(TokenRevocationOptions.FailOpenOnCacheFailure)}",
+                failOpen);
+
+            return !failOpen;
         }
     }
 

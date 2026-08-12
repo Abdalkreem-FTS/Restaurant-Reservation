@@ -42,6 +42,10 @@ builder.Services.AddStackExchangeRedisCache(redis =>
     redis.InstanceName = "restaurant-reservation:";
 });
 
+builder.Services
+    .AddOptions<TokenRevocationOptions>()
+    .Bind(builder.Configuration.GetSection(TokenRevocationOptions.SectionName));
+
 builder.Services.AddSingleton<ITokenRevocationStore, DistributedCacheTokenRevocationStore>();
 
 builder.Services
