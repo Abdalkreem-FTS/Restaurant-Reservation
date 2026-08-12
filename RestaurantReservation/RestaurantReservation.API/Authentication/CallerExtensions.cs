@@ -6,13 +6,13 @@ public static class CallerExtensions
 {
     extension(ClaimsPrincipal caller)
     {
-        public bool IsStaff() => caller.IsInRole(Roles.Employee);
-        public bool IsManager() => caller.IsInRole(Roles.Manager);
+        private bool IsStaff() => caller.IsInRole(Roles.Employee);
+        private bool IsManager() => caller.IsInRole(Roles.Manager);
 
-        public int? CustomerId() =>
+        private int? CustomerId() =>
             int.TryParse(caller.FindFirstValue(JwtTokenGenerator.CustomerIdClaimType), out var customerId) ? customerId : null;
 
-        public int? EmployeeId() =>
+        private int? EmployeeId() =>
             int.TryParse(caller.FindFirstValue(JwtTokenGenerator.EmployeeIdClaimType), out var employeeId) ? employeeId : null;
 
         public bool MayActFor(int customerId) =>
