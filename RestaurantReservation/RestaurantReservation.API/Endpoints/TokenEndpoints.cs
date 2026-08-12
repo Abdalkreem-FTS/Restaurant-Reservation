@@ -13,7 +13,6 @@ public static class TokenEndpoints
 
         group.MapPost("", SignIn)
             .WithName(nameof(SignIn))
-            .Accepts<LoginRequest>("application/json")
             .WithValidation<LoginRequest>()
             .WithSummary("Sign in and receive a bearer token. Every seeded user has the password Password123!.")
             .Produces<TokenResponse>()

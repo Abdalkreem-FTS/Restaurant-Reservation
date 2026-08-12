@@ -59,7 +59,6 @@ public static class ReservationEndpoints
     {
         group.MapPost("", Create)
             .WithName(nameof(Create))
-            .Accepts<CreateReservationRequest>("application/json")
             .WithValidation<CreateReservationRequest>()
             .WithSummary("Book a table. The restaurant and the table capacity follow from the table and are not accepted here.")
             .Produces<ReservationResponse>(StatusCodes.Status201Created)
@@ -68,7 +67,6 @@ public static class ReservationEndpoints
 
         group.MapPut("/{id:int}", Update)
             .WithName(nameof(Update))
-            .Accepts<UpdateReservationRequest>("application/json")
             .WithValidation<UpdateReservationRequest>()
             .WithSummary("Replace a reservation.")
             .Produces<ReservationResponse>()
