@@ -7,6 +7,8 @@ namespace RestaurantReservation.API.Endpoints;
 
 public static class ReservationEndpoints
 {
+    private const string Group = "Reservations";
+
     public static IEndpointRouteBuilder MapReservationEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/reservations")
@@ -22,7 +24,7 @@ public static class ReservationEndpoints
     private static void MapGetEndpoints(RouteGroupBuilder group)
     {
         group.MapGet("", List)
-            .WithName(nameof(List))
+            .WithName($"{Group}.{nameof(List)}")
             .RequireAuthorization(AuthorizationPolicies.StaffOnly)
             .WithSummary("List every reservation. Staff only.")
             .Produces<PagedResponse<ReservationResponse>>()
@@ -30,26 +32,26 @@ public static class ReservationEndpoints
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
         group.MapGet("/{id:int}", Get)
-            .WithName(nameof(Get))
+            .WithName($"{Group}.{nameof(Get)}")
             .WithSummary("Read one reservation. A customer may read only their own; anyone else's is reported as missing.")
             .Produces<ReservationResponse>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapGet("/customer/{customerId:int}", ListByCustomer)
-            .WithName(nameof(ListByCustomer))
+            .WithName($"{Group}.{nameof(ListByCustomer)}")
             .WithSummary("List one customer's reservations. A customer may ask only for their own.")
             .Produces<PagedResponse<ReservationResponse>>()
             .ProducesProblem(StatusCodes.Status403Forbidden)
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapGet("/{reservationId:int}/orders", ListOrders)
-            .WithName(nameof(ListOrders))
+            .WithName($"{Group}.{nameof(ListOrders)}")
             .WithSummary("List the orders placed on a reservation, each with its items. A reservation with none answers with an empty page, not 404.")
             .Produces<PagedResponse<OrderResponse>>()
             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapGet("/{reservationId:int}/menu-items", ListOrderedMenuItems)
-            .WithName(nameof(ListOrderedMenuItems))
+            .WithName($"{Group}.{nameof(ListOrderedMenuItems)}")
             .WithSummary("List the distinct menu items ordered within a reservation.")
             .Produces<PagedResponse<MenuItemResponse>>()
             .ProducesProblem(StatusCodes.Status404NotFound);
@@ -58,7 +60,7 @@ public static class ReservationEndpoints
     private static void MapMutationEndpoints(RouteGroupBuilder group)
     {
         group.MapPost("", Create)
-            .WithName(nameof(Create))
+            .WithName($"{Group}.{nameof(Create)}")
             .WithSummary("Book a table. The restaurant and the table capacity follow from the table and are not accepted here.")
             .Produces<ReservationResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem()
@@ -66,7 +68,7 @@ public static class ReservationEndpoints
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapPut("/{id:int}", Update)
-            .WithName(nameof(Update))
+            .WithName($"{Group}.{nameof(Update)}")
             .WithSummary("Replace a reservation.")
             .Produces<ReservationResponse>()
             .ProducesValidationProblem()
@@ -75,7 +77,7 @@ public static class ReservationEndpoints
             .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapDelete("/{id:int}", Delete)
-            .WithName(nameof(Delete))
+            .WithName($"{Group}.{nameof(Delete)}")
             .WithSummary("Cancel a reservation.")
             .Produces(StatusCodes.Status204NoContent)
             .ProducesProblem(StatusCodes.Status404NotFound)
@@ -164,7 +166,10 @@ public static class ReservationEndpoints
         var result = await service.CreateAsync(user, request, ct);
 
         return result.Match(
-            onValue: reservation => Results.Created($"/api/reservations/{reservation.ReservationId}", reservation.ToResponse()),
+            onValue: reservation => Results.CreatedAtRoute(
+                $"{Group}.{nameof(Get)}",
+                new { id = reservation.ReservationId },
+                reservation.ToResponse()),
             onError: errors => errors.ToProblem());
     }
 

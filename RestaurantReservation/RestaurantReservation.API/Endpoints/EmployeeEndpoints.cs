@@ -5,6 +5,8 @@ namespace RestaurantReservation.API.Endpoints;
 
 public static class EmployeeEndpoints
 {
+    private const string Group = "Employees";
+
     public static IEndpointRouteBuilder MapEmployeeEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/employees")
@@ -19,14 +21,14 @@ public static class EmployeeEndpoints
     private static void MapGetEndpoints(RouteGroupBuilder group)
     {
         group.MapGet("/managers", ListManagers)
-            .WithName(nameof(ListManagers))
+            .WithName($"{Group}.{nameof(ListManagers)}")
             .WithSummary("List every employee holding the Manager position.")
             .Produces<PagedResponse<EmployeeResponse>>()
             .ProducesProblem(StatusCodes.Status401Unauthorized)
             .ProducesProblem(StatusCodes.Status403Forbidden);
 
         group.MapGet("/{employeeId:int}/statistics", GetStatistics)
-            .WithName(nameof(GetStatistics))
+            .WithName($"{Group}.{nameof(GetStatistics)}")
             .WithSummary("Order figures for one employee. Managers may read anyone's, others only their own. An employee with no orders reports zeros.")
             .Produces<EmployeeStatisticsResponse>()
             .ProducesProblem(StatusCodes.Status403Forbidden)

@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.JsonWebTokens;
@@ -7,12 +8,14 @@ namespace RestaurantReservation.API.Endpoints;
 
 public static class TokenEndpoints
 {
+    private const string Group = "Tokens";
+
     public static IEndpointRouteBuilder MapTokenEndpoints(this IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("/api/tokens").WithTags("Tokens");
 
         group.MapPost("", SignIn)
-            .WithName(nameof(SignIn))
+            .WithName($"{Group}.{nameof(SignIn)}")
             .WithValidation<LoginRequest>()
             .WithSummary("Sign in and receive a bearer token. Every seeded user has the password Password123!.")
             .Produces<TokenResponse>()
@@ -20,7 +23,7 @@ public static class TokenEndpoints
             .ProducesProblem(StatusCodes.Status401Unauthorized);
 
         group.MapDelete("", SignOut)
-            .WithName(nameof(SignOut))
+            .WithName($"{Group}.{nameof(SignOut)}")
             .RequireAuthorization(AuthorizationPolicies.Authenticated)
             .WithSummary("Sign out, revoking the token used to make this call until it would have expired anyway.")
             .Produces(StatusCodes.Status204NoContent)
@@ -51,15 +54,10 @@ public static class TokenEndpoints
         ITokenRevocationStore revoked,
         CancellationToken ct = default)
     {
-        var tokenId = user.FindFirstValue(JwtRegisteredClaimNames.Jti);
-        var expiry = user.FindFirstValue(JwtRegisteredClaimNames.Exp);
+        var tokenId = user.FindFirstValue(JwtRegisteredClaimNames.Jti)!;
+        var expiresAt = long.Parse(user.FindFirstValue(JwtRegisteredClaimNames.Exp)!, CultureInfo.InvariantCulture);
 
-        if (tokenId is null || !long.TryParse(expiry, out var expiresAtUnixSeconds))
-        {
-            return Error.Failure("Auth.TokenNotRevocable", "The token is missing the claims needed to revoke it.").ToProblem();
-        }
-
-        var wasRevoked = await revoked.RevokeAsync(tokenId, DateTimeOffset.FromUnixTimeSeconds(expiresAtUnixSeconds), ct);
+        var wasRevoked = await revoked.RevokeAsync(tokenId, DateTimeOffset.FromUnixTimeSeconds(expiresAt), ct);
 
         return wasRevoked
             ? Results.NoContent()
