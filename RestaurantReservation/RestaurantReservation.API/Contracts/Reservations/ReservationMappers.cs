@@ -1,16 +1,11 @@
+using Riok.Mapperly.Abstractions;
+
 namespace RestaurantReservation.API.Contracts.Reservations;
 
-public static class ReservationMappers
+[Mapper(RequiredMappingStrategy = RequiredMappingStrategy.Target)]
+public static partial class ReservationMappers
 {
-    public static ReservationResponse ToResponse(this Reservation reservation) =>
-        new(
-            reservation.ReservationId,
-            reservation.CustomerId,
-            reservation.RestaurantId,
-            reservation.TableId,
-            reservation.ReservationDate,
-            reservation.PartySize);
+    public static partial ReservationResponse ToResponse(this Reservation reservation);
 
-    public static PagedResponse<ReservationResponse> ToResponse(this PagedResult<Reservation> page) =>
-        page.ToPagedResponse(ToResponse);
+    public static partial PagedResponse<ReservationResponse> ToResponse(this PagedResult<Reservation> page);
 }

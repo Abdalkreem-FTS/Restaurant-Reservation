@@ -1,15 +1,11 @@
+using Riok.Mapperly.Abstractions;
+
 namespace RestaurantReservation.API.Contracts.MenuItems;
 
-public static class MenuItemMappers
+[Mapper(RequiredMappingStrategy = RequiredMappingStrategy.Target)]
+public static partial class MenuItemMappers
 {
-    public static MenuItemResponse ToResponse(this MenuItem menuItem) =>
-        new(
-            menuItem.ItemId,
-            menuItem.RestaurantId,
-            menuItem.Name,
-            menuItem.Description,
-            menuItem.Price);
+    private static partial MenuItemResponse ToResponse(this MenuItem menuItem);
 
-    public static PagedResponse<MenuItemResponse> ToResponse(this PagedResult<MenuItem> page) =>
-        page.ToPagedResponse(ToResponse);
+    public static partial PagedResponse<MenuItemResponse> ToResponse(this PagedResult<MenuItem> page);
 }

@@ -19,6 +19,8 @@
         <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.22.0" />
         <!-- Pinned above the 2.0.0 that Microsoft.AspNetCore.OpenApi resolves, which carries GHSA-v5pm-xwqc-g5wc. -->
         <PackageReference Include="Microsoft.OpenApi" Version="2.11.0" />
+        <!-- Source generator: the attributes are compile-time only, so it does not flow onward. -->
+        <PackageReference Include="Riok.Mapperly" Version="4.3.1" PrivateAssets="all" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.2.3" />
     </ItemGroup>
 
@@ -38,13 +40,17 @@
 
     <!-- Global usings so per-file framework using directives are unnecessary. -->
     <ItemGroup>
-        <Using Include="RestaurantReservation.API.Authentication" />
         <Using Include="RestaurantReservation.API.Contracts.Common" />
         <Using Include="RestaurantReservation.API.Endpoints" />
         <Using Include="RestaurantReservation.API.Errors" />
         <Using Include="RestaurantReservation.API.Filters" />
         <Using Include="RestaurantReservation.API.Grpc" />
         <Using Include="RestaurantReservation.API.OpenApi" />
+        <Using Include="RestaurantReservation.API.Security" />
+        <Using Include="RestaurantReservation.API.Security.Endpoints" />
+        <Using Include="RestaurantReservation.API.Security.Handlers" />
+        <Using Include="RestaurantReservation.API.Security.Models" />
+        <Using Include="RestaurantReservation.API.Security.Services" />
         <Using Include="RestaurantReservation.API.Services" />
         <Using Include="RestaurantReservation.API.Validators" />
         <Using Include="RestaurantReservation.Db" />

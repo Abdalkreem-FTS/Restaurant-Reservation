@@ -1,18 +1,14 @@
+using Riok.Mapperly.Abstractions;
+
 namespace RestaurantReservation.API.Contracts.Orders;
 
-public static class OrderMappers
+[Mapper(RequiredMappingStrategy = RequiredMappingStrategy.Target)]
+public static partial class OrderMappers
 {
-    public static OrderResponse ToResponse(this Order order) =>
-        new(
-            order.OrderId,
-            order.ReservationId,
-            order.EmployeeId,
-            order.OrderDate,
-            order.TotalAmount,
-            [.. order.OrderItems.Select(ToResponse)]);
+    [MapProperty(nameof(Order.OrderItems), nameof(OrderResponse.Items))]
+    private static partial OrderResponse ToResponse(this Order order);
 
-    public static PagedResponse<OrderResponse> ToResponse(this PagedResult<Order> page) =>
-        page.ToPagedResponse(ToResponse);
+    public static partial PagedResponse<OrderResponse> ToResponse(this PagedResult<Order> page);
 
     private static OrderItemResponse ToResponse(this OrderItem orderItem) =>
         new(

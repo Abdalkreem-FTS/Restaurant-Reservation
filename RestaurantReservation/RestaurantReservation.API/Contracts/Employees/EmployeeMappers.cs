@@ -1,32 +1,28 @@
 using RestaurantReservation.Db.Models;
+using Riok.Mapperly.Abstractions;
 
 namespace RestaurantReservation.API.Contracts.Employees;
 
-public static class EmployeeMappers
+[Mapper(RequiredMappingStrategy = RequiredMappingStrategy.Target)]
+public static partial class EmployeeMappers
 {
-    public static EmployeeResponse ToResponse(this Employee employee) =>
-        new(
-            employee.EmployeeId,
-            employee.RestaurantId,
-            employee.FirstName,
-            employee.LastName,
-            employee.Position.ToString());
+    private static partial EmployeeResponse ToResponse(this Employee employee);
 
-    public static PagedResponse<EmployeeResponse> ToResponse(this PagedResult<Employee> page) =>
-        page.ToPagedResponse(ToResponse);
+    public static partial PagedResponse<EmployeeResponse> ToResponse(this PagedResult<Employee> page);
 
-    public static EmployeeAverageOrderAmountResponse ToAverageOrderAmountResponse(
-        this OrderAmountStatistics statistics,
-        int employeeId) =>
-        new(employeeId, statistics.Average);
+    extension(OrderAmountStatistics statistics)
+    {
+        public EmployeeAverageOrderAmountResponse ToAverageOrderAmountResponse(int employeeId) =>
+            new(employeeId, statistics.Average);
 
-    public static EmployeeStatisticsResponse ToResponse(this OrderAmountStatistics statistics, int employeeId) =>
-        new(
-            employeeId,
-            statistics.Count,
-            statistics.Sum,
-            statistics.Average,
-            statistics.Min,
-            statistics.Max,
-            statistics.Variance);
+        public EmployeeStatisticsResponse ToResponse(int employeeId) =>
+            new(
+                employeeId,
+                statistics.Count,
+                statistics.Sum,
+                statistics.Average,
+                statistics.Min,
+                statistics.Max,
+                statistics.Variance);
+    }
 }
