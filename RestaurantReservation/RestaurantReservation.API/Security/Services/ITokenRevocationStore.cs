@@ -1,4 +1,4 @@
-namespace RestaurantReservation.API.Authentication;
+namespace RestaurantReservation.API.Security.Services;
 
 public interface ITokenRevocationStore
 {

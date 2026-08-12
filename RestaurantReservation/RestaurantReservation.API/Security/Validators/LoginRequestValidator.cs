@@ -1,7 +1,6 @@
 using FluentValidation;
-using RestaurantReservation.API.Contracts.Tokens;
 
-namespace RestaurantReservation.API.Validators;
+namespace RestaurantReservation.API.Security.Validators;
 
 public class LoginRequestValidator : AbstractValidator<LoginRequest>
 {

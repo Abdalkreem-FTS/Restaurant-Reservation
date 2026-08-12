@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace RestaurantReservation.API.Authentication;
+namespace RestaurantReservation.API.Security.Models;
 
 public sealed class JwtOptions
 {

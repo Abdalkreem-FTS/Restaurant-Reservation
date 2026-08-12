@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
-namespace RestaurantReservation.API.Authentication;
+namespace RestaurantReservation.API.Security.Handlers;
 
 public static class JwtBearerEventHandlers
 {

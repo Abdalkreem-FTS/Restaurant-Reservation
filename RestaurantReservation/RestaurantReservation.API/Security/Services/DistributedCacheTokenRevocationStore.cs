@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
 
-namespace RestaurantReservation.API.Authentication;
+namespace RestaurantReservation.API.Security.Services;
 
 /// <summary>
 /// Black List

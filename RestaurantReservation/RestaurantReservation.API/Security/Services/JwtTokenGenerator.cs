@@ -3,9 +3,8 @@ using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
-using RestaurantReservation.API.Contracts.Tokens;
 
-namespace RestaurantReservation.API.Authentication;
+namespace RestaurantReservation.API.Security.Services;
 
 public sealed class JwtTokenGenerator(IOptionsMonitor<JwtOptions> options)
 {

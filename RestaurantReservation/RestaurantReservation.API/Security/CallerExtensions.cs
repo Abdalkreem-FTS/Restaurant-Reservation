@@ -1,6 +1,6 @@
 using System.Security.Claims;
 
-namespace RestaurantReservation.API.Authentication;
+namespace RestaurantReservation.API.Security;
 
 public static class CallerExtensions
 {

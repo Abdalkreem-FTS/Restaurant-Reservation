@@ -2,9 +2,8 @@ using System.Globalization;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.JsonWebTokens;
-using RestaurantReservation.API.Contracts.Tokens;
 
-namespace RestaurantReservation.API.Endpoints;
+namespace RestaurantReservation.API.Security.Endpoints;
 
 public static class TokenEndpoints
 {

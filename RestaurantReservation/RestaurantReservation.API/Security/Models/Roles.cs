@@ -1,6 +1,6 @@
 using RestaurantReservation.Db.Enums;
 
-namespace RestaurantReservation.API.Authentication;
+namespace RestaurantReservation.API.Security.Models;
 
 public static class Roles
 {

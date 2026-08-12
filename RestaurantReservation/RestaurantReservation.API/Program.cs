@@ -2,9 +2,6 @@ using Elastic.Extensions.Logging;
 using Elastic.Extensions.Logging.Options;
 using Elastic.Ingest.Elasticsearch;
 using FluentValidation;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,44 +22,7 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.AddScoped<IReservationService, ReservationService>();
 
-builder.Services
-    .AddOptions<JwtOptions>()
-    .Bind(builder.Configuration.GetSection(JwtOptions.SectionName))
-    .ValidateDataAnnotations()
-    .ValidateOnStart();
-
-builder.Services.AddSingleton<JwtTokenGenerator>();
-builder.Services.AddSingleton<IPasswordHasher<User>, PasswordHasher<User>>();
-
-builder.Services.AddStackExchangeRedisCache(redis =>
-{
-    redis.Configuration = builder.Configuration.GetConnectionString("Redis")
-                          ?? throw new InvalidOperationException("The 'Redis' connection string is required for token revocation.");
-
-    redis.InstanceName = "restaurant-reservation:";
-});
-
-builder.Services
-    .AddOptions<TokenRevocationOptions>()
-    .Bind(builder.Configuration.GetSection(TokenRevocationOptions.SectionName));
-
-builder.Services.AddSingleton<ITokenRevocationStore, DistributedCacheTokenRevocationStore>();
-
-builder.Services
-    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer();
-
-builder.Services
-    .AddOptions<JwtBearerOptions>(JwtBearerDefaults.AuthenticationScheme)
-    .Configure<IOptionsMonitor<JwtOptions>, ILoggerFactory>((bearer, jwt, loggers) =>
-    {
-        bearer.MapInboundClaims = false;
-
-        bearer.TokenValidationParameters = JwtTokenGenerator.CreateValidationParameters(jwt.CurrentValue);
-        bearer.Events = JwtBearerEventHandlers.Create(loggers.CreateLogger(JwtBearerEventHandlers.LoggerCategory));
-    });
-
-builder.Services.AddAuthorizationPolicies();
+builder.Services.AddSecurity(builder.Configuration);
 
 builder.Services.AddGrpc();
 builder.Services.AddGrpcReflection();
