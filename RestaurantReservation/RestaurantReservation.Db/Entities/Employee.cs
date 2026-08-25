@@ -14,9 +14,13 @@ public class Employee : IVersionedEntity
 
     public EmployeePosition Position { get; set; }
 
+    public int? UserId { get; set; }
+
     public byte[] RowVersion { get; set; } = [];
 
     // Navigations
+    public User? User { get; set; }
+
     public Restaurant Restaurant { get; set; } = null!;
 
     public ICollection<Order> Orders { get; set; } = new List<Order>();

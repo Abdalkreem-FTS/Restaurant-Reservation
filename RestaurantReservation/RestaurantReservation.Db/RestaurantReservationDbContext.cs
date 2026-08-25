@@ -7,6 +7,7 @@ namespace RestaurantReservation.Db;
 public class RestaurantReservationDbContext(DbContextOptions<RestaurantReservationDbContext> options) : DbContext(options)
 {
     // Tables
+    public DbSet<User> Users => Set<User>();
     public DbSet<Customer> Customers => Set<Customer>();
     public DbSet<Restaurant> Restaurants => Set<Restaurant>();
     public DbSet<Table> Tables => Set<Table>();
@@ -47,11 +48,9 @@ public class RestaurantReservationDbContext(DbContextOptions<RestaurantReservati
                 .IsRowVersion();
         }
     }
-    
+
     // Functions
     [DbFunction("fn_CalculateRestaurantRevenue", "dbo")]
-    public static decimal CalculateRestaurantRevenue(int restaurantId)
-    {
+    public static decimal CalculateRestaurantRevenue(int restaurantId) =>
         throw new NotSupportedException("CalculateRestaurantRevenue maps to a SQL function and can only be used within an EF Core LINQ query.");
-    }
 }

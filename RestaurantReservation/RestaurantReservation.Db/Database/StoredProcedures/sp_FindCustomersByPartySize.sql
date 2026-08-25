@@ -8,6 +8,7 @@ BEGIN
 
     SELECT DISTINCT
         c.CustomerId,
+        c.UserId,
         c.FirstName,
         c.LastName,
         c.Email,

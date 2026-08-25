@@ -56,10 +56,17 @@ namespace RestaurantReservation.Db.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("CustomerId");
 
                     b.HasIndex("Email")
                         .IsUnique();
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("Customers");
 
@@ -71,7 +78,8 @@ namespace RestaurantReservation.Db.Migrations
                             FirstName = "John",
                             LastName = "Doe",
                             PhoneNumber = "555-1001",
-                            RowVersion = new byte[0]
+                            RowVersion = new byte[0],
+                            UserId = 1
                         },
                         new
                         {
@@ -80,7 +88,8 @@ namespace RestaurantReservation.Db.Migrations
                             FirstName = "Jane",
                             LastName = "Smith",
                             PhoneNumber = "555-1002",
-                            RowVersion = new byte[0]
+                            RowVersion = new byte[0],
+                            UserId = 2
                         },
                         new
                         {
@@ -89,7 +98,8 @@ namespace RestaurantReservation.Db.Migrations
                             FirstName = "Michael",
                             LastName = "Johnson",
                             PhoneNumber = "555-1003",
-                            RowVersion = new byte[0]
+                            RowVersion = new byte[0],
+                            UserId = 3
                         },
                         new
                         {
@@ -98,7 +108,8 @@ namespace RestaurantReservation.Db.Migrations
                             FirstName = "Emily",
                             LastName = "Davis",
                             PhoneNumber = "555-1004",
-                            RowVersion = new byte[0]
+                            RowVersion = new byte[0],
+                            UserId = 4
                         },
                         new
                         {
@@ -107,7 +118,8 @@ namespace RestaurantReservation.Db.Migrations
                             FirstName = "David",
                             LastName = "Wilson",
                             PhoneNumber = "555-1005",
-                            RowVersion = new byte[0]
+                            RowVersion = new byte[0],
+                            UserId = 5
                         });
                 });
 
@@ -143,9 +155,16 @@ namespace RestaurantReservation.Db.Migrations
                         .ValueGeneratedOnAddOrUpdate()
                         .HasColumnType("rowversion");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("EmployeeId");
 
                     b.HasIndex("RestaurantId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("Employees");
 
@@ -157,7 +176,8 @@ namespace RestaurantReservation.Db.Migrations
                             LastName = "Turner",
                             Position = "Manager",
                             RestaurantId = 1,
-                            RowVersion = new byte[0]
+                            RowVersion = new byte[0],
+                            UserId = 6
                         },
                         new
                         {
@@ -166,7 +186,8 @@ namespace RestaurantReservation.Db.Migrations
                             LastName = "Cook",
                             Position = "VipOrdersWaiter",
                             RestaurantId = 1,
-                            RowVersion = new byte[0]
+                            RowVersion = new byte[0],
+                            UserId = 7
                         },
                         new
                         {
@@ -175,7 +196,8 @@ namespace RestaurantReservation.Db.Migrations
                             LastName = "White",
                             Position = "Manager",
                             RestaurantId = 2,
-                            RowVersion = new byte[0]
+                            RowVersion = new byte[0],
+                            UserId = 8
                         },
                         new
                         {
@@ -184,7 +206,8 @@ namespace RestaurantReservation.Db.Migrations
                             LastName = "Brown",
                             Position = "StandardWaiter",
                             RestaurantId = 2,
-                            RowVersion = new byte[0]
+                            RowVersion = new byte[0],
+                            UserId = 9
                         },
                         new
                         {
@@ -193,7 +216,8 @@ namespace RestaurantReservation.Db.Migrations
                             LastName = "Black",
                             Position = "Manager",
                             RestaurantId = 3,
-                            RowVersion = new byte[0]
+                            RowVersion = new byte[0],
+                            UserId = 10
                         },
                         new
                         {
@@ -202,7 +226,18 @@ namespace RestaurantReservation.Db.Migrations
                             LastName = "Green",
                             Position = "AssistantWaiter",
                             RestaurantId = 4,
-                            RowVersion = new byte[0]
+                            RowVersion = new byte[0],
+                            UserId = 11
+                        },
+                        new
+                        {
+                            EmployeeId = 7,
+                            FirstName = "Grace",
+                            LastName = "Hall",
+                            Position = "Admin",
+                            RestaurantId = 1,
+                            RowVersion = new byte[0],
+                            UserId = 12
                         });
                 });
 
@@ -313,8 +348,8 @@ namespace RestaurantReservation.Db.Migrations
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("OrderDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("ReservationId")
                         .HasColumnType("int");
@@ -345,7 +380,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             OrderId = 1,
                             EmployeeId = 1,
-                            OrderDate = new DateTime(2026, 8, 1, 19, 30, 0, 0, DateTimeKind.Unspecified),
+                            OrderDate = new DateTimeOffset(new DateTime(2026, 8, 1, 19, 30, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             ReservationId = 1,
                             RestaurantId = 1,
                             RowVersion = new byte[0],
@@ -355,7 +390,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             OrderId = 2,
                             EmployeeId = 2,
-                            OrderDate = new DateTime(2026, 8, 1, 20, 0, 0, 0, DateTimeKind.Unspecified),
+                            OrderDate = new DateTimeOffset(new DateTime(2026, 8, 1, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             ReservationId = 1,
                             RestaurantId = 1,
                             RowVersion = new byte[0],
@@ -365,7 +400,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             OrderId = 3,
                             EmployeeId = 1,
-                            OrderDate = new DateTime(2026, 8, 2, 20, 30, 0, 0, DateTimeKind.Unspecified),
+                            OrderDate = new DateTimeOffset(new DateTime(2026, 8, 2, 20, 30, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             ReservationId = 2,
                             RestaurantId = 1,
                             RowVersion = new byte[0],
@@ -375,7 +410,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             OrderId = 4,
                             EmployeeId = 3,
-                            OrderDate = new DateTime(2026, 8, 3, 19, 0, 0, 0, DateTimeKind.Unspecified),
+                            OrderDate = new DateTimeOffset(new DateTime(2026, 8, 3, 19, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             ReservationId = 3,
                             RestaurantId = 2,
                             RowVersion = new byte[0],
@@ -385,7 +420,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             OrderId = 5,
                             EmployeeId = 5,
-                            OrderDate = new DateTime(2026, 8, 4, 20, 0, 0, 0, DateTimeKind.Unspecified),
+                            OrderDate = new DateTimeOffset(new DateTime(2026, 8, 4, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             ReservationId = 4,
                             RestaurantId = 3,
                             RowVersion = new byte[0],
@@ -395,7 +430,7 @@ namespace RestaurantReservation.Db.Migrations
                         {
                             OrderId = 6,
                             EmployeeId = 6,
-                            OrderDate = new DateTime(2026, 8, 5, 20, 30, 0, 0, DateTimeKind.Unspecified),
+                            OrderDate = new DateTimeOffset(new DateTime(2026, 8, 5, 20, 30, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             ReservationId = 5,
                             RestaurantId = 4,
                             RowVersion = new byte[0],
@@ -543,8 +578,8 @@ namespace RestaurantReservation.Db.Migrations
                     b.Property<int>("PartySize")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("ReservationDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("ReservationDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("RestaurantId")
                         .HasColumnType("int");
@@ -587,7 +622,7 @@ namespace RestaurantReservation.Db.Migrations
                             ReservationId = 1,
                             CustomerId = 1,
                             PartySize = 2,
-                            ReservationDate = new DateTime(2026, 8, 1, 19, 0, 0, 0, DateTimeKind.Unspecified),
+                            ReservationDate = new DateTimeOffset(new DateTime(2026, 8, 1, 19, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             RestaurantId = 1,
                             RowVersion = new byte[0],
                             TableCapacity = 2,
@@ -598,7 +633,7 @@ namespace RestaurantReservation.Db.Migrations
                             ReservationId = 2,
                             CustomerId = 2,
                             PartySize = 4,
-                            ReservationDate = new DateTime(2026, 8, 2, 20, 0, 0, 0, DateTimeKind.Unspecified),
+                            ReservationDate = new DateTimeOffset(new DateTime(2026, 8, 2, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             RestaurantId = 1,
                             RowVersion = new byte[0],
                             TableCapacity = 4,
@@ -609,7 +644,7 @@ namespace RestaurantReservation.Db.Migrations
                             ReservationId = 3,
                             CustomerId = 3,
                             PartySize = 3,
-                            ReservationDate = new DateTime(2026, 8, 3, 18, 0, 0, 0, DateTimeKind.Unspecified),
+                            ReservationDate = new DateTimeOffset(new DateTime(2026, 8, 3, 18, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             RestaurantId = 2,
                             RowVersion = new byte[0],
                             TableCapacity = 4,
@@ -620,7 +655,7 @@ namespace RestaurantReservation.Db.Migrations
                             ReservationId = 4,
                             CustomerId = 4,
                             PartySize = 6,
-                            ReservationDate = new DateTime(2026, 8, 4, 19, 0, 0, 0, DateTimeKind.Unspecified),
+                            ReservationDate = new DateTimeOffset(new DateTime(2026, 8, 4, 19, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             RestaurantId = 3,
                             RowVersion = new byte[0],
                             TableCapacity = 6,
@@ -631,7 +666,7 @@ namespace RestaurantReservation.Db.Migrations
                             ReservationId = 5,
                             CustomerId = 5,
                             PartySize = 2,
-                            ReservationDate = new DateTime(2026, 8, 5, 20, 0, 0, 0, DateTimeKind.Unspecified),
+                            ReservationDate = new DateTimeOffset(new DateTime(2026, 8, 5, 20, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             RestaurantId = 4,
                             RowVersion = new byte[0],
                             TableCapacity = 2,
@@ -642,7 +677,7 @@ namespace RestaurantReservation.Db.Migrations
                             ReservationId = 6,
                             CustomerId = 1,
                             PartySize = 8,
-                            ReservationDate = new DateTime(2026, 8, 6, 21, 0, 0, 0, DateTimeKind.Unspecified),
+                            ReservationDate = new DateTimeOffset(new DateTime(2026, 8, 6, 21, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)),
                             RestaurantId = 5,
                             RowVersion = new byte[0],
                             TableCapacity = 8,
@@ -810,6 +845,124 @@ namespace RestaurantReservation.Db.Migrations
                         });
                 });
 
+            modelBuilder.Entity("RestaurantReservation.Db.Entities.User", b =>
+                {
+                    b.Property<int>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("UserId");
+
+                    b.HasIndex("Username")
+                        .IsUnique();
+
+                    b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            PasswordHash = "AQAAAAIAAYagAAAAEIBPg0ewhJ5n53xz44KlYSSDvhwxyBuRtzQ+ytXmpEao5y/dmWmFOp9jKOJa7ux+bQ==",
+                            RowVersion = new byte[0],
+                            Username = "john.doe"
+                        },
+                        new
+                        {
+                            UserId = 2,
+                            PasswordHash = "AQAAAAIAAYagAAAAEDm7Y7HkVS/kaIjfrvDj74Oca+8J1GYa7mpUjuUg2ag4HQvo4Jk6tIm47/VGnbmkyw==",
+                            RowVersion = new byte[0],
+                            Username = "jane.smith"
+                        },
+                        new
+                        {
+                            UserId = 3,
+                            PasswordHash = "AQAAAAIAAYagAAAAEKBdwZsSAeO6CJrYUhTx74qhMv3YxDO/loMRtHxIs7XFN51qIocdI9jRe0Q98PYOTQ==",
+                            RowVersion = new byte[0],
+                            Username = "michael.johnson"
+                        },
+                        new
+                        {
+                            UserId = 4,
+                            PasswordHash = "AQAAAAIAAYagAAAAEOTo3Ly50M1eu49u3Mf9qr+NkRO2QRWcNRjZDqBUfNRLz0gEgCsSS4dm4a7B6TCJJg==",
+                            RowVersion = new byte[0],
+                            Username = "emily.davis"
+                        },
+                        new
+                        {
+                            UserId = 5,
+                            PasswordHash = "AQAAAAIAAYagAAAAEBKJGhoqk3DWchXBg6SQULteviXT1GatQtEXHqWnto6/LBam3IdGQWDibFUgf/yk1w==",
+                            RowVersion = new byte[0],
+                            Username = "david.wilson"
+                        },
+                        new
+                        {
+                            UserId = 6,
+                            PasswordHash = "AQAAAAIAAYagAAAAENo/A93E/1FhZg8+OAnOLm70xAqSjW6clyn4AJIpCH4GcsBwuJaxf5UEA2oZ4UQjSQ==",
+                            RowVersion = new byte[0],
+                            Username = "alice.turner"
+                        },
+                        new
+                        {
+                            UserId = 7,
+                            PasswordHash = "AQAAAAIAAYagAAAAEExphGBVuZExPZTlHQ6hQO1GT+nyON6koGot2siIyRA1lE1WzPDn0h1xXAXbpR3Yjw==",
+                            RowVersion = new byte[0],
+                            Username = "bob.cook"
+                        },
+                        new
+                        {
+                            UserId = 8,
+                            PasswordHash = "AQAAAAIAAYagAAAAELVW31dCx40O1GBijQ7Upeu9sGZVfCHyQhBLqGR7P9vXO0hcsmrRNx8uuhNB2zQ61Q==",
+                            RowVersion = new byte[0],
+                            Username = "carol.white"
+                        },
+                        new
+                        {
+                            UserId = 9,
+                            PasswordHash = "AQAAAAIAAYagAAAAEDrJQV8EwE1UtxJtz6GE2j0AHcNTlzBiFcKt8cwXwWC3oBHA95ImfdMgaeXnZs8IRQ==",
+                            RowVersion = new byte[0],
+                            Username = "dan.brown"
+                        },
+                        new
+                        {
+                            UserId = 10,
+                            PasswordHash = "AQAAAAIAAYagAAAAEMgwF8w+eAczEKjurnAoIhjX+BxqRpaZxALyFd3XRU3UIcMI/MVHMQRmLPwmkDSX5Q==",
+                            RowVersion = new byte[0],
+                            Username = "eve.black"
+                        },
+                        new
+                        {
+                            UserId = 11,
+                            PasswordHash = "AQAAAAIAAYagAAAAEP0ocSpAttnNpNcwKkhuNIFho6xB3NNWy/FFZp/XaKuS5p3uUkeQ3DfjfmQ/klby4g==",
+                            RowVersion = new byte[0],
+                            Username = "frank.green"
+                        },
+                        new
+                        {
+                            UserId = 12,
+                            PasswordHash = "AQAAAAIAAYagAAAAEAXattSIS4ApP9nf7qxL7QLK2TVDauevYDfGbUsZAYtUDRxJ0/LweHYhuNj/ReWHEg==",
+                            RowVersion = new byte[0],
+                            Username = "grace.hall"
+                        });
+                });
+
             modelBuilder.Entity("RestaurantReservation.Db.Entities.Views.EmployeeRestaurantDetail", b =>
                 {
                     b.Property<int>("EmployeeId")
@@ -875,8 +1028,8 @@ namespace RestaurantReservation.Db.Migrations
                     b.Property<int>("PartySize")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("ReservationDate")
-                        .HasColumnType("datetime2");
+                    b.Property<DateTimeOffset>("ReservationDate")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<int>("ReservationId")
                         .HasColumnType("int");
@@ -901,6 +1054,16 @@ namespace RestaurantReservation.Db.Migrations
                     b.ToView("vw_ReservationDetails", (string)null);
                 });
 
+            modelBuilder.Entity("RestaurantReservation.Db.Entities.Customer", b =>
+                {
+                    b.HasOne("RestaurantReservation.Db.Entities.User", "User")
+                        .WithOne("Customer")
+                        .HasForeignKey("RestaurantReservation.Db.Entities.Customer", "UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("RestaurantReservation.Db.Entities.Employee", b =>
                 {
                     b.HasOne("RestaurantReservation.Db.Entities.Restaurant", "Restaurant")
@@ -909,7 +1072,14 @@ namespace RestaurantReservation.Db.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("RestaurantReservation.Db.Entities.User", "User")
+                        .WithOne("Employee")
+                        .HasForeignKey("RestaurantReservation.Db.Entities.Employee", "UserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.Navigation("Restaurant");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("RestaurantReservation.Db.Entities.MenuItem", b =>
@@ -1043,6 +1213,13 @@ namespace RestaurantReservation.Db.Migrations
             modelBuilder.Entity("RestaurantReservation.Db.Entities.Table", b =>
                 {
                     b.Navigation("Reservations");
+                });
+
+            modelBuilder.Entity("RestaurantReservation.Db.Entities.User", b =>
+                {
+                    b.Navigation("Customer");
+
+                    b.Navigation("Employee");
                 });
 #pragma warning restore 612, 618
         }

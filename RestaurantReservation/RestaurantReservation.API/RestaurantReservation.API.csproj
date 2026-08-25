@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Elastic.Extensions.Logging" Version="9.0.0" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
+        <PackageReference Include="Grpc.AspNetCore" Version="2.83.0" />
+        <PackageReference Include="Grpc.AspNetCore.Server.Reflection" Version="2.83.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.10" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.10" />
+        <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="10.0.10" />
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore" Version="10.0.10" />
+        <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="8.22.0" />
+        <!-- Pinned above the 2.0.0 that Microsoft.AspNetCore.OpenApi resolves, which carries GHSA-v5pm-xwqc-g5wc. -->
+        <PackageReference Include="Microsoft.OpenApi" Version="2.11.0" />
+        <!-- Source generator: the attributes are compile-time only, so it does not flow onward. -->
+        <PackageReference Include="Riok.Mapperly" Version="4.3.1" PrivateAssets="all" />
+        <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="10.2.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Protobuf Include="Protos\reservation.proto" GrpcServices="Server" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="..\.dockerignore">
+        <Link>.dockerignore</Link>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\RestaurantReservation.Db\RestaurantReservation.Db.csproj" />
+    </ItemGroup>
+
+    <!-- Global usings so per-file framework using directives are unnecessary. -->
+    <ItemGroup>
+        <Using Include="RestaurantReservation.API.Contracts.Common" />
+        <Using Include="RestaurantReservation.API.Endpoints" />
+        <Using Include="RestaurantReservation.API.Errors" />
+        <Using Include="RestaurantReservation.API.Filters" />
+        <Using Include="RestaurantReservation.API.Grpc" />
+        <Using Include="RestaurantReservation.API.OpenApi" />
+        <Using Include="RestaurantReservation.API.Security" />
+        <Using Include="RestaurantReservation.API.Security.Endpoints" />
+        <Using Include="RestaurantReservation.API.Security.Handlers" />
+        <Using Include="RestaurantReservation.API.Security.Models" />
+        <Using Include="RestaurantReservation.API.Security.Services" />
+        <Using Include="RestaurantReservation.API.Services" />
+        <Using Include="RestaurantReservation.API.Validators" />
+        <Using Include="RestaurantReservation.Db" />
+        <Using Include="RestaurantReservation.Db.Abstractions" />
+        <Using Include="RestaurantReservation.Db.Entities" />
+        <Using Include="RestaurantReservation.Db.Pagination" />
+        <Using Include="RestaurantReservation.Db.Results" />
+    </ItemGroup>
+
+</Project>

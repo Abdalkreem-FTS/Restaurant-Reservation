@@ -14,7 +14,7 @@ public class Order : IVersionedEntity
     /// </summary>
     public int RestaurantId { get; set; }
 
-    public DateTime OrderDate { get; set; }
+    public DateTimeOffset OrderDate { get; set; }
 
     /// <summary>
     /// Derived from the order's items rather than set directly, so it can never disagree with the

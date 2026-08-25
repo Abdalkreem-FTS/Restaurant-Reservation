@@ -17,6 +17,20 @@ services:
       retries: 10
       start_period: 30s
 
+  redis:
+    image: redis:8.2-alpine
+    container_name: rr-redis
+    # Published on 6380 because 6379 on this host belongs to the sibling API project.
+    ports:
+      - "6380:6379"
+    volumes:
+      - rr-redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:9.3.0
     container_name: rr-elasticsearch
@@ -50,3 +64,4 @@ services:
 volumes:
   rr-mssql-data:
   rr-es-data:
+  rr-redis-data:
